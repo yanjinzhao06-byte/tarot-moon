@@ -616,7 +616,7 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.2 2.6a9.5 9.5 0 1 0 6.2 13.5 7.4 7.4 0 0 1-6.2-13.5z"/></svg>
       <span>今夜 · 渐亏</span>
     </div>
-    <button class="sound-btn on" id="soundBtn" type="button" aria-pressed="true" aria-label="关闭声音" title="声音：开">
+    <button class="sound-btn on" id="soundBtn" data-snd="none" type="button" aria-pressed="true" aria-label="关闭声音" title="声音：开">
       <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
     </button>
   </div>
@@ -697,7 +697,7 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
 
 <div class="modal" id="modal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-label="牌义词典">
-    <div class="sheet-head"><h2>牌义词典 · 78</h2><button class="icon-btn" id="closeAtlas" aria-label="关闭">✕</button></div>
+    <div class="sheet-head"><h2>牌义词典 · 78</h2><button class="icon-btn" id="closeAtlas" data-snd="none" aria-label="关闭">✕</button></div>
     <div class="atlas" id="atlasGrid"></div>
     <div class="atlas-detail" id="atlasDetail"><p class="ad-empty">点击上方任意一张牌，查看它的正位与逆位含义。</p></div>
   </div>
@@ -1076,6 +1076,34 @@ const Sound = (function () {
         }));
         break;
       }
+      case "click": {
+        const d = 0.98 + Math.random() * 0.06;
+        bell(1480 * d, 0, { dur: 0.34, gain: 0.045, ratio: 3.6, index: 0.45, pan: (Math.random() - .5) * .2 });
+        air(0.07, 0.016, 3200, 6400);
+        break;
+      }
+      case "nav": {
+        bell(880 * (0.98 + Math.random() * 0.05), 0, { dur: 0.85, gain: 0.038, ratio: 2.0, index: 0.5 });
+        break;
+      }
+      case "chip": {
+        bell(1180 * (0.98 + Math.random() * 0.06), 0, { dur: 0.55, gain: 0.034, ratio: 3.2, index: 0.4, pan: (Math.random() - .5) * .3 });
+        break;
+      }
+      case "back": {
+        bell(660, 0, { dur: 0.65, gain: 0.038, ratio: 1.8, index: 0.5 });
+        bell(440, 0.05, { dur: 0.8, gain: 0.028, ratio: 1.5, index: 0.4 });
+        break;
+      }
+      case "toggle-on": {
+        bell(740, 0, { dur: 0.45, gain: 0.032, ratio: 1.6 });
+        bell(1110, 0.07, { dur: 0.85, gain: 0.04, ratio: 2.0, pan: .12 });
+        break;
+      }
+      case "toggle-off": {
+        bell(740, 0, { dur: 0.5, gain: 0.04, ratio: 1.6 });
+        break;
+      }
       case "settle":
         [262, 392, 523].forEach((f, i) => bell(f, i * 0.05, { dur: 2.6, gain: 0.045, ratio: 1.5, index: 0.6 }));
         bell(2093, 0.12, { dur: 1.6, gain: 0.025 });
@@ -1345,6 +1373,7 @@ async function startDraw() {
   stageEl.innerHTML = ""; fanEl.innerHTML = ""; fanEl.classList.remove("open", "closing", "empty");
   deckEl.classList.remove("done");
   deckEl.classList.add("shuffling");
+  Sound.play("shuffle");
   hintEl.textContent = "洗牌中 · 把注意力放回你的问题上";
 
   await sleep(reduceMotion ? 80 : 1250);
@@ -1357,7 +1386,7 @@ async function startDraw() {
   state.fan = pool.slice(0, n).map(c => ({ card: c, rev: Math.random() < 0.5 }));
 
   fanEl.innerHTML = state.fan.map((f, i) =>
-    '<button class="fcard" data-k="' + i + '" aria-label="第 ' + (i + 1) + ' 张牌"><div class="fback">' +
+    '<button class="fcard" data-k="' + i + '" data-snd="none" aria-label="第 ' + (i + 1) + ' 张牌"><div class="fback">' +
       backSVG(false) + "</div></button>"
   ).join("");
 
@@ -1698,11 +1727,30 @@ if (soundBtn) {
   syncSound();
   soundBtn.addEventListener("click", () => {
     Sound.unlock();
-    const on = Sound.toggle();
-    syncSound();
-    if (on) Sound.play("ui");
+    if (Sound.isEnabled()) {
+      Sound.play("toggle-off");
+      soundBtn.classList.remove("on");
+      soundBtn.setAttribute("aria-pressed", "false");
+      soundBtn.setAttribute("aria-label", "开启声音");
+      soundBtn.title = "声音：关";
+      setTimeout(() => { Sound.setEnabled(false); syncSound(); }, 280);
+    } else {
+      Sound.setEnabled(true);
+      Sound.play("toggle-on");
+      syncSound();
+    }
   });
 }
+
+/* 所有按钮统一点击音：牌扇与开关自行处理 */
+document.addEventListener("click", e => {
+  const btn = e.target.closest("button");
+  if (!btn || btn.disabled) return;
+  if (btn.dataset.snd === "none") return;
+  if (btn.classList.contains("nav-btn")) Sound.play("nav");
+  else if (btn.classList.contains("spread") || btn.classList.contains("tile")) Sound.play("chip");
+  else Sound.play("click");
+}, true);
 window.addEventListener("pointerdown", () => Sound.unlock(), { once: true });
 window.addEventListener("keydown", () => Sound.unlock(), { once: true });
 
@@ -1744,6 +1792,7 @@ function openAtlas() {
   setTimeout(() => $("#closeAtlas").focus({ preventScroll: true }), 60);
 }
 function closeAtlas() {
+  Sound.play("back");
   modal.classList.remove("open");
   document.body.style.overflow = "";
   atlasTimer = setTimeout(() => { modal.hidden = true; }, reduceMotion ? 0 : 460);
