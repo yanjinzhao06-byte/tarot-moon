@@ -434,6 +434,7 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
 .vw{font-family:var(--serif);font-size:clamp(44px,9vw,64px);letter-spacing:.2em;color:var(--gold-lt);
   text-indent:.2em;line-height:1;text-shadow:0 0 46px rgba(201,168,107,.4)}
 .verdict p{margin:16px auto 0;max-width:560px;font-size:13px;line-height:2.1;color:#c9d0dd}
+.verdict .yn-deck{margin-top:14px;font-size:10px;letter-spacing:.2em;color:rgba(141,151,171,.8)}
 .rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:14px}
 .rc{position:relative;padding:20px 19px 22px;border:1px solid rgba(201,168,107,.14);
   background:linear-gradient(180deg,rgba(11,18,31,.74),rgba(6,10,18,.62));animation:rise-in .85s var(--ease) both;
@@ -854,7 +855,7 @@ const SPREADS = [
   {id:"three", name:"时间之流", desc:"过去 · 现在 · 未来，看清走向",    pos:["过去","现在","未来"]},
   {id:"love",  name:"关系之镜", desc:"你的心 · 对方的心 · 关系走向",     pos:["你的心","对方的心","关系走向"]},
   {id:"cross", name:"五张十字", desc:"现状 · 阻碍 · 根源 · 建议 · 结果", pos:["现状","阻碍","根源","建议","结果"]},
-  {id:"yesno", name:"是 / 否",  desc:"一张牌给出倾向性回答",             pos:["回答"]}
+  {id:"yesno", name:"是 / 否",  desc:"仅用 22 张大牌 + 4 张 Ace + 圣杯九", pos:["回答"]}
 ];
 
 
@@ -1366,6 +1367,10 @@ function buildDeck() {
 /* =======================================================================
    4. 洗牌 → 牌扇
    ======================================================================= */
+function drawPool(sp) {
+  if (sp.id === "yesno") return deck.filter(c => c.arcana === "major" || c.num === "A" || c.cn === "圣杯九");
+  return deck;
+}
 function shuffleArr(arr) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -1401,9 +1406,12 @@ async function startDraw() {
   deckEl.classList.add("done");
 
   /* 原有随机逻辑：78 张洗牌，牌扇取前 N 张，各 50% 逆位 */
-  const pool = shuffleArr(deck);
-  const n = window.innerWidth < 640 ? 16 : 21;
+  const pool = shuffleArr(drawPool(state.spread));
+  const isYesNo = state.spread.id === "yesno";
+  const mobile = window.innerWidth < 640;
+  const n = isYesNo ? pool.length : (mobile ? 16 : 21);
   state.fan = pool.slice(0, n).map(c => ({ card: c, rev: Math.random() < 0.5 }));
+  fanEl.style.gridTemplateColumns = "repeat(" + (isYesNo ? (mobile ? 5 : 9) : (mobile ? 4 : 7)) + ",minmax(0,1fr))";
 
   fanEl.innerHTML = state.fan.map((f, i) =>
     '<button class="fcard" data-k="' + i + '" data-snd="none" aria-label="第 ' + (i + 1) + ' 张牌">' +
@@ -1711,8 +1719,15 @@ function showReading() {
 
   if (sp.id === "yesno") {
     const p = picks[0], yes = !p.rev;
-    html += '<div class="verdict"><div class="vw">' + (yes ? "是" : "否") + "</div><p>" +
-      (yes ? "牌面倾向肯定。" + p.card.cn + "正位：" + p.card.up : "牌面倾向否定，或者时机还没到。" + p.card.cn + "逆位：" + p.card.rev) + "</p></div>";
+    const kind = p.card.cn === "圣杯九" ? "wish" : (p.card.arcana === "major" ? "major" : "ace");
+    const note = kind === "wish"
+      ? "圣杯九是这组牌里的「愿望之牌」，它回答的是你真正想要的那件事会不会成——"
+      : kind === "major"
+        ? "抽到大牌，说明这个答案落在命运层面，分量比日常小事更重——"
+        : "抽到 Ace，答案落在一个「开端」上，机会本身是清楚的——";
+    html += '<div class="verdict"><div class="vw">' + (yes ? "是" : "否") + "</div><p>" + note +
+      (yes ? p.card.cn + "正位：" + p.card.up : p.card.cn + "逆位：" + p.card.rev) + "</p>" +
+      '<p class="yn-deck">牌组：22 张大阿卡纳 + 4 张 Ace + 圣杯九 · 共 27 张</p></div>';
   }
 
   html += '<div class="rgrid">' + picks.map((p, i) =>
