@@ -506,6 +506,32 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
 .ad-row{margin:10px 0 0;font-size:12.8px;line-height:2;color:#c3cbd9}
 .ad-row b{display:inline-block;min-width:34px;margin-right:10px;font-weight:400;font-size:9.5px;letter-spacing:.24em;color:var(--gold)}
 .ad-empty{font-size:11px;color:#5f6880;letter-spacing:.12em}
+.el-tag{display:inline-block;margin-top:8px;font-size:10px;letter-spacing:.2em;color:var(--gold);
+  border:1px solid rgba(201,168,107,.32);padding:3px 9px}
+.lore h3{font-family:var(--serif);font-weight:500;font-size:14px;letter-spacing:.26em;color:var(--gold-lt);
+  margin:22px 0 10px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,107,.14)}
+.lore h3:first-child{margin-top:0}
+.lore p{margin:0 0 8px;font-size:12.5px;line-height:2.05;color:#c3cbd9}
+.lore .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:7px;margin:10px 0 6px}
+.lore .kv div{border:1px solid rgba(201,168,107,.13);padding:9px 11px;font-size:11.5px;color:#c8d0de;line-height:1.8}
+.lore .kv b{display:block;font-weight:400;font-size:12px;letter-spacing:.16em;color:var(--gold);margin-bottom:3px}
+.lore .flow{font-size:12px;line-height:2.1;color:#cfd6e2;letter-spacing:.04em}
+.lore .warn{margin-top:20px;padding-top:12px;border-top:1px solid rgba(201,168,107,.1);
+  font-size:10.5px;line-height:1.95;color:#7f7299;letter-spacing:.04em}
+.wuxing{margin-top:2px;padding:22px clamp(16px,3vw,26px);border:1px solid rgba(201,168,107,.16);
+  background:linear-gradient(160deg,rgba(26,34,52,.5),rgba(8,12,20,.7));animation:rise-in .9s var(--ease) both;
+  animation-delay:calc(var(--n,3) * 110ms + 300ms)}
+.wuxing h3{margin:0 0 14px;font-family:var(--serif);font-weight:500;font-size:13px;letter-spacing:.34em;
+  color:var(--gold-lt);text-indent:.34em;display:flex;align-items:center;gap:12px}
+.wuxing h3::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,107,.28),transparent)}
+.wx-bars{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.wx-bars span{flex:1;min-width:64px;border:1px solid rgba(201,168,107,.14);padding:9px 6px;text-align:center;
+  font-size:11px;letter-spacing:.16em;color:#c8d0de}
+.wx-bars span i{display:block;font-style:normal;font-size:15px;color:var(--gold-lt);margin-bottom:3px;letter-spacing:.1em}
+.wx-bars span.hot{border-color:rgba(201,168,107,.5);background:rgba(201,168,107,.08)}
+.wx-bars span.zero{opacity:.42}
+.wuxing p{margin:0 0 10px;font-size:12.8px;line-height:2.05;color:#c3cbd9}
+.wuxing p:last-child{margin-bottom:0}
 
 /* ================= 9. 飞牌 / 火花 ================= */
 .flyer{position:fixed;z-index:80;pointer-events:none;border-radius:3px;
@@ -671,9 +697,10 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
         </div>
         <div class="spreads" id="spreads" role="group" aria-label="选择牌阵"></div>
         <div class="controls">
-          <button class="btn btn-primary" id="drawBtn">洗牌 · 展开牌扇</button>
+          <button class="btn btn-primary" id="drawBtn">洗牌 · 摊开牌面</button>
           <button class="btn btn-ghost btn-sm" id="resetBtn">重新开始</button>
           <button class="btn btn-ghost btn-sm" id="atlasBtn">牌义词典</button>
+          <button class="btn btn-ghost btn-sm" id="loreBtn">玄学基础</button>
         </div>
         <p class="hint" id="hint">选好牌阵后点「洗牌」，牌扇展开后由你亲手挑选每一张。</p>
       </div>
@@ -713,6 +740,15 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
   </div>
 </div>
 
+<div class="modal" id="loreModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="玄学基础">
+    <div class="sheet-head">
+      <h2>玄 学 基 础</h2>
+      <button class="icon-btn" id="closeLore" data-snd="none" aria-label="关闭">✕</button>
+    </div>
+    <div class="lore" id="loreBody"></div>
+  </div>
+</div>
 <script>
 /* ============ 数据：22 张大阿卡纳 ============ */
 const MAJOR_DATA = [
@@ -1162,6 +1198,84 @@ const THEME = {
   "命运之轮": "wheel", "女祭司": "priestess", "魔术师": "magician", "恋人": "lovers"
 };
 
+/* ===== 五行 / 方位（知识层） ===== */
+const SUIT_EL = { wands: "火", cups: "水", swords: "金", pentacles: "土" };
+const MAJOR_EL = {
+  "愚者": "木", "魔术师": "木", "女祭司": "水", "皇后": "土", "皇帝": "火", "教皇": "土",
+  "恋人": "木", "战车": "水", "力量": "火", "隐士": "土", "命运之轮": "木", "正义": "木",
+  "倒吊人": "水", "死神": "水", "节制": "火", "恶魔": "土", "高塔": "火", "星星": "木",
+  "月亮": "水", "太阳": "火", "审判": "水", "世界": "土"
+};
+const EL_ORDER = ["木", "火", "土", "金", "水"];
+const EL_INFO = {
+  "木": { dir: "东方", color: "青、绿", act: "多接触植物与木头，把新计划放在早晨做" },
+  "火": { dir: "南方", color: "红、紫", act: "点亮南侧的灯，主动开口，把事情推到台面上" },
+  "土": { dir: "中央、西南、东北", color: "黄、褐", act: "整理桌面与储物，先立规矩再谈速度" },
+  "金": { dir: "西方", color: "白、金、银", act: "做减法、断舍离，用清晰的规则收尾" },
+  "水": { dir: "北方", color: "黑、深蓝", act: "多喝水、靠近水边，允许自己休息与沉默" }
+};
+const EL_SHENG = { "木": "火", "火": "土", "土": "金", "金": "水", "水": "木" };
+const EL_KE = { "木": "土", "土": "水", "水": "火", "火": "金", "金": "木" };
+function elementOf(card) {
+  return card.suit ? SUIT_EL[card.suit] : (MAJOR_EL[card.cn] || "土");
+}
+
+const LORE_HTML = [
+  "<h3>五行 · 方位 · 颜色</h3>",
+  '<div class="kv">',
+  "<div><b>木</b>东方 · 青绿<br>生火，克土</div>",
+  "<div><b>火</b>南方 · 红紫<br>生土，克金</div>",
+  "<div><b>土</b>中央 · 黄褐<br>生金，克水</div>",
+  "<div><b>金</b>西方 · 白金银<br>生水，克木</div>",
+  "<div><b>水</b>北方 · 黑蓝<br>生木，克火</div>",
+  "</div>",
+  "<h3>相生相克</h3>",
+  '<p class="flow">相生：木 → 火 → 土 → 金 → 水 → 木<br>相克：木 → 土 → 水 → 火 → 金 → 木</p>',
+  "<p>相生是推动，相克是约束。牌面里哪个五行最多，那股力量就在推它“生”的那一环、压它“克”的那一环；缺的那一环，往往正是这段时间没有参与进来的东西。</p>",
+  "<h3>天干 · 地支</h3>",
+  "<p>十天干：甲 乙 丙 丁 戊 己 庚 辛 壬 癸<br>十二地支：子 丑 寅 卯 辰 巳 午 未 申 酉 戌 亥</p>",
+  '<div class="kv">',
+  "<div><b>天干五行</b>甲乙木 · 丙丁火 · 戊己土 · 庚辛金 · 壬癸水</div>",
+  "<div><b>地支生肖</b>子鼠 丑牛 寅虎 卯兔 辰龙 巳蛇 午马 未羊 申猴 酉鸡 戌狗 亥猪</div>",
+  "<div><b>十二时辰</b>子 23–01，丑 01–03，寅 03–05，卯 05–07，辰 07–09，巳 09–11，午 11–13，未 13–15，申 15–17，酉 17–19，戌 19–21，亥 21–23</div>",
+  "</div>",
+  "<p>干支六十甲子循环，是传统用来记时、记日、记年的系统；命理里说的“犯冲”“相合”，指的就是地支之间的冲、合、刑、害关系。</p>",
+  "<h3>居家风水三则</h3>",
+  "<p><b>明财位</b>：进门后与门斜对的角落。宜静、宜亮、忌堆杂物；一盏暖灯或一盆常绿植物就够，不必堆满招财物。</p>",
+  "<p><b>文昌位</b>：书桌背后有靠、面前开阔、不背门、不面壁。流年文昌（四绿文曲）每年飞临不同方位，不必年年追。</p>",
+  "<p><b>床与桌</b>：床头靠实墙、不压梁、不对门；桌面左侧（青龙）宜高，右侧（白虎）宜低，常用手边留空。</p>",
+  "<h3>塔罗 × 五行</h3>",
+  "<p>本站的对应规则：权杖＝火，圣杯＝水，宝剑＝金，星币＝土；22 张大牌按占星元素换算——火象（白羊/狮子/射手）＝火，土象（金牛/处女/摩羯）＝土，风象（双子/天秤/水瓶）＝木，水象（巨蟹/天蝎/双鱼）＝水。</p>",
+  '<p class="warn">以上为传统文化与民俗知识整理，属于观念体系而非科学结论，只作自我观察与生活美学的参考。塔罗与五行的对应是本站的桥接规则（西方四元素 → 中式五行），不是传统命理定式。<br>参考资料：<a href="https://blogcastle.lib.fcu.edu.tw/archives/1431" target="_blank" rel="noopener" style="color:var(--gold)">逢甲大学图书馆《阴阳、五行与天干、地支》</a>。</p>'
+].join("");
+
+function wuxingHTML(picks) {
+  const cnt = { "木": 0, "火": 0, "土": 0, "金": 0, "水": 0 };
+  picks.forEach(p => { cnt[elementOf(p.card)] += 1; });
+  const max = Math.max.apply(null, EL_ORDER.map(k => cnt[k]));
+  const strong = EL_ORDER.filter(k => cnt[k] === max && max > 0);
+  const zero = EL_ORDER.filter(k => cnt[k] === 0);
+  const bars = EL_ORDER.map(k =>
+    '<span class="' + (cnt[k] === max && max > 0 ? "hot" : cnt[k] === 0 ? "zero" : "") + '"><i>' + k + "</i>" + cnt[k] + "</span>"
+  ).join("");
+  const out = [];
+  out.push("这 " + picks.length + " 张牌的五行落在「" + EL_ORDER.filter(k => cnt[k] > 0).join("、") + "」上。");
+  if (strong.length && (strong.length >= 3 || (max === 1 && picks.length <= 3))) {
+    out.push("分布比较分散，没有单一主导的五行——说明事情是几条线并行的，不必只盯一处。可参考：" +
+      strong.map(function (k) { return k + "（" + EL_INFO[k].dir + " · " + EL_INFO[k].color + "）"; }).join("；") + "。");
+  } else if (strong.length) {
+    const a = strong[0];
+    out.push("「" + strong.join("、") + "」偏多，以「" + a + "」为例：生「" + EL_SHENG[a] + "」、克「" + EL_KE[a] + "」，这股力量会把事情往「" + EL_SHENG[a] + "」推，同时压住「" + EL_KE[a] + "」那一环。对应方位 " + EL_INFO[a].dir + "、颜色 " + EL_INFO[a].color + "；具体可以做的是：" + EL_INFO[a].act + "。");
+  }
+  if (zero.length) {
+    const z = EL_INFO[zero[0]];
+    out.push("没有出现的是「" + zero.join("、") + "」。缺不必急着补，它更像提醒你：这段时间先别在那件事上硬用力。想借一点符号的话，" + z.dir + "方位、" + z.color + "色可以先放在身边。");
+  } else {
+    out.push("五行齐全，没有缺口——通常表示多条线索同时在动，按次序一件件做就好，不需要额外补什么。");
+  }
+  return '<div class="wuxing" style="--n:' + picks.length + '"><h3>五 行 · 方 位</h3><div class="wx-bars">' + bars + "</div>" +
+    out.map(t => "<p>" + t + "</p>").join("") + "</div>";
+}
 const state = { spread: SPREADS[1], picks: [], question: "", phase: "idle", scene: "home", fan: [], flying: false };
 let lastTick = 0;
 
@@ -1737,6 +1851,7 @@ function showReading() {
       "</div><p>" + (p.rev ? p.card.rev : p.card.up) + "</p></article>"
   ).join("") + "</div>";
 
+  html += wuxingHTML(picks);
   html += '<div class="synth" style="--n:' + picks.length + '"><h3>综合解读</h3>' +
     synth(picks, sp).map(t => "<p>" + t + "</p>").join("") + "</div>";
 
@@ -1838,6 +1953,21 @@ function closeAtlas() {
   document.body.style.overflow = "";
   atlasTimer = setTimeout(() => { modal.hidden = true; }, reduceMotion ? 0 : 460);
 }
+const loreModal = $("#loreModal"), loreBody = $("#loreBody");
+function openLore() {
+  if (loreBody && !loreBody.dataset.ready) { loreBody.innerHTML = LORE_HTML; loreBody.dataset.ready = "1"; }
+  loreModal.hidden = false;
+  document.body.style.overflow = "hidden";
+  requestAnimationFrame(() => loreModal.classList.add("open"));
+}
+function closeLore() {
+  loreModal.classList.remove("open");
+  document.body.style.overflow = "";
+  setTimeout(() => { loreModal.hidden = true; }, reduceMotion ? 0 : 460);
+}
+$("#loreBtn").addEventListener("click", openLore);
+$("#closeLore").addEventListener("click", closeLore);
+loreModal.addEventListener("click", e => { if (e.target === loreModal) closeLore(); });
 atlasGrid.addEventListener("click", e => {
   const t = e.target.closest(".tile");
   if (!t) return;
@@ -1845,7 +1975,7 @@ atlasGrid.addEventListener("click", e => {
   t.classList.add("on");
   const c = deck[+t.dataset.i];
   atlasDetail.innerHTML = "<h3>" + c.cn + '</h3><div class="ad-en">' + c.en + '</div><div class="ad-kw">' + c.kw +
-    '</div><div class="ad-row"><b>正位</b>' + c.up + '</div><div class="ad-row"><b>逆位</b>' + c.rev + "</div>";
+    '</div><div class="ad-row"><b>正位</b>' + c.up + '</div><div class="ad-row"><b>逆位</b>' + c.rev + "</div>" + '<span class="el-tag">五行 · ' + elementOf(c) + " · " + EL_INFO[elementOf(c)].dir + "</span>";
 });
 
 /* =======================================================================
@@ -1974,7 +2104,11 @@ $("#navAtlas").addEventListener("click", openAtlas);
 $("#atlasBtn").addEventListener("click", openAtlas);
 $("#closeAtlas").addEventListener("click", closeAtlas);
 modal.addEventListener("click", e => { if (e.target === modal) closeAtlas(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && !modal.hidden) closeAtlas(); });
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (!loreModal.hidden) closeLore();
+  else if (!modal.hidden) closeAtlas();
+});
 
 drawBtn.addEventListener("click", startDraw);
 resetBtn.addEventListener("click", () => {
