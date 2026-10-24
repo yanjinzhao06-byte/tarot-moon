@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<title>月影塔罗 · 在星辰与月光之间</title>
+<meta name="description" content="78 张韦特塔罗，五种牌阵，从牌扇中亲手抽取，一场有仪式感的星象体验。" />
+<style>
+/* ================= 0. 基础 ================= */
+:root{
+  --night:#04060c;--navy:#070c16;--navy2:#0a1322;--navy3:#0f1c30;
+  --gold:#c9a86b;--gold-lt:#f5e3ba;--gold-hi:#fff3d6;--gold-dp:#8e7442;
+  --line:rgba(201,168,107,.2);--txt:#e4e8f1;--muted:#8d97ab;--muted2:#6b7590;
+  --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC","SimSun",Georgia,serif;
+  --latin:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --cw:clamp(112px,14.4vw,158px);
+  --ease:cubic-bezier(.22,.8,.24,1);
+  --ease-io:cubic-bezier(.65,.02,.25,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{min-height:100vh;background:var(--night);color:var(--txt);-webkit-tap-highlight-color:transparent;
+  font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(201,168,107,.3);color:#fff}
+button{font:inherit;color:inherit}
+:focus-visible{outline:1px solid rgba(201,168,107,.75);outline-offset:3px}
+
+/* ================= 1. 夜空 ================= */
+#stars{position:fixed;inset:0;z-index:1;pointer-events:none}
+.sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  background:radial-gradient(120% 80% at 50% -10%,#0d1a2e 0%,#081120 38%,#04070e 74%,#02040a 100%)}
+.nebula{position:absolute;border-radius:50%;mix-blend-mode:screen;will-change:transform}
+.n1{width:120vmax;height:120vmax;left:-40vmax;top:-55vmax;opacity:.5;
+  background:radial-gradient(closest-side,rgba(38,62,110,.55),rgba(20,34,64,.2) 45%,transparent 72%);
+  animation:drift-a 150s var(--ease-io) infinite alternate}
+.n2{width:100vmax;height:100vmax;right:-38vmax;top:-10vmax;opacity:.42;
+  background:radial-gradient(closest-side,rgba(58,44,92,.45),rgba(30,22,54,.16) 48%,transparent 74%);
+  animation:drift-b 190s var(--ease-io) infinite alternate}
+.n3{width:130vmax;height:90vmax;left:50%;bottom:-70vmax;transform:translateX(-50%);opacity:.5;
+  background:radial-gradient(closest-side,rgba(24,44,78,.42),rgba(10,20,40,.15) 50%,transparent 76%);
+  animation:drift-c 230s var(--ease-io) infinite alternate}
+.candle{position:absolute;width:52vmax;height:52vmax;border-radius:50%;mix-blend-mode:screen}
+.c1{left:-24vmax;bottom:-26vmax;animation:flicker 11s ease-in-out infinite;
+  background:radial-gradient(closest-side,rgba(255,184,104,.13),rgba(255,150,70,.05) 45%,transparent 70%)}
+.c2{right:-26vmax;bottom:-30vmax;animation:flicker 15s ease-in-out infinite reverse;
+  background:radial-gradient(closest-side,rgba(255,198,130,.1),rgba(255,160,80,.04) 45%,transparent 70%)}
+.vignette{position:absolute;inset:0;
+  background:radial-gradient(115% 85% at 50% 42%,transparent 42%,rgba(2,4,9,.55) 78%,rgba(1,2,5,.9))}
+
+/* ================= 2. 顶栏 ================= */
+.topbar{position:fixed;left:0;right:0;top:0;z-index:30;display:flex;align-items:center;
+  justify-content:space-between;gap:18px;padding:14px clamp(16px,4vw,44px);
+  background:linear-gradient(180deg,rgba(3,6,12,.92),rgba(3,6,12,.5) 62%,transparent)}
+.brand{display:flex;align-items:center;gap:11px;background:none;border:0;padding:4px 0;cursor:pointer;color:var(--gold)}
+.brand svg{width:26px;height:26px;transition:transform .8s var(--ease)}
+.brand:hover svg{transform:rotate(45deg)}
+.brand-txt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}
+.brand-txt b{font-family:var(--latin);font-size:15px;letter-spacing:.42em;font-weight:500;color:var(--gold-lt)}
+.brand-txt i{font-style:normal;font-size:9px;letter-spacing:.4em;color:var(--muted2);margin-top:2px}
+.nav{display:flex;align-items:center;gap:clamp(10px,3vw,34px)}
+.nav-btn{position:relative;background:none;border:0;padding:8px 2px;cursor:pointer;
+  font-size:11.5px;letter-spacing:.26em;color:var(--muted);transition:color .45s var(--ease)}
+.nav-btn::after{content:"";position:absolute;left:50%;bottom:0;width:0;height:1px;
+  background:var(--gold);transform:translateX(-50%);transition:width .5s var(--ease)}
+.nav-btn:hover,.nav-btn.on{color:var(--gold-lt)}
+.nav-btn.on::after{width:16px}
+.top-moon{display:flex;align-items:center;gap:10px;color:rgba(201,168,107,.5)}
+.top-moon svg{width:18px;height:18px;animation:moon-breathe 9s ease-in-out infinite}
+.top-moon span{font-size:9.5px;letter-spacing:.28em;color:var(--muted2)}
+.top-right{display:flex;align-items:center;gap:14px}
+.sound-btn{position:relative;width:34px;height:34px;display:grid;place-items:center;background:none;
+  border:1px solid rgba(201,168,107,.28);border-radius:50%;cursor:pointer;transition:.4s var(--ease)}
+.sound-btn:hover{border-color:rgba(201,168,107,.65);background:rgba(201,168,107,.08)}
+.bars{display:flex;align-items:flex-end;gap:2.5px;height:12px}
+.bars i{width:2px;height:4px;background:var(--gold);opacity:.5;border-radius:1px;transition:.3s}
+.sound-btn.on .bars i{animation:eq 1.5s ease-in-out infinite;opacity:.95}
+.sound-btn.on .bars i:nth-child(2){animation-delay:.18s}
+.sound-btn.on .bars i:nth-child(3){animation-delay:.36s}
+.sound-btn:not(.on) .bars i{height:3px;opacity:.3}
+.sound-btn:not(.on)::after{content:"";position:absolute;width:17px;height:1px;background:rgba(201,168,107,.7);transform:rotate(-45deg)}
+@keyframes eq{0%,100%{height:4px}50%{height:11px}}
+
+/* ================= 3. 按钮 ================= */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;touch-action:manipulation;
+  padding:14px 34px;border-radius:2px;cursor:pointer;overflow:hidden;
+  border:1px solid rgba(201,168,107,.42);
+  background:linear-gradient(180deg,rgba(201,168,107,.12),rgba(201,168,107,.03));
+  color:var(--gold-lt);font-size:12px;letter-spacing:.28em;
+  transition:color .45s var(--ease),border-color .45s var(--ease),box-shadow .55s var(--ease),
+    transform .35s var(--ease),background .45s var(--ease)}
+.btn::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(112deg,transparent 32%,rgba(255,242,212,.22) 50%,transparent 68%);
+  transform:translateX(-130%)}
+.btn:hover::after{transform:translateX(130%);transition:transform .95s var(--ease)}
+.btn:hover{border-color:rgba(201,168,107,.85);color:#fff6e0;
+  box-shadow:0 0 0 1px rgba(201,168,107,.14),0 18px 44px -22px rgba(201,168,107,.9)}
+.btn:active{transform:translateY(1px) scale(.996)}
+.btn[disabled]{opacity:.42;cursor:default;box-shadow:none;transform:none}
+.btn[disabled]::after{display:none}
+.btn-primary{background:linear-gradient(180deg,#f3e2b8 0%,#d3b27a 52%,#a9884f 100%);
+  color:#1a1305;border-color:rgba(255,240,205,.6);font-weight:600;
+  box-shadow:0 16px 40px -22px rgba(205,174,114,.8)}
+.btn-primary:hover{color:#120c02;box-shadow:0 22px 52px -22px rgba(222,186,118,.95)}
+.btn-ghost{background:rgba(8,13,22,.4)}
+.btn-sm{padding:11px 22px;font-size:11px;letter-spacing:.22em}
+
+/* ================= 4. 场景 ================= */
+main{position:relative;z-index:2}\n.scene{overflow-x:clip}
+.scene{display:none}
+.scene.active{display:block;animation:scene-in .95s var(--ease) both}
+.scene.leaving{display:block;animation:scene-out .4s ease both;pointer-events:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 clamp(16px,4vw,32px)}
+
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:120px 20px 90px;position:relative;text-align:center;overflow:hidden}
+.gate-orbit{position:absolute;left:50%;top:50%;width:min(880px,120vw);aspect-ratio:1;
+  transform:translate(-50%,-52%);color:rgba(201,168,107,.16);pointer-events:none;animation:orbit-spin 320s linear infinite}
+.gate-orbit circle,.gate-orbit path{fill:none;stroke:currentColor;stroke-width:.4}
+.gate-inner{position:relative;z-index:2;max-width:700px}
+.eyebrow{margin:0 0 22px;font-size:10px;letter-spacing:.62em;color:rgba(201,168,107,.72);text-transform:uppercase;text-indent:.62em}
+.gate h1{margin:0;font-family:var(--serif);font-weight:500;font-size:clamp(30px,6.2vw,60px);
+  letter-spacing:.14em;line-height:1.35;
+  background:linear-gradient(180deg,#fff8e6 0%,#e9d3a1 46%,#b99457 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 34px rgba(201,168,107,.18))}
+.gate .lede{margin:16px 0 0;font-family:var(--serif);font-size:clamp(14px,2.2vw,19px);letter-spacing:.4em;color:#b9c0cf;text-indent:.4em}
+.gate .note{margin:26px auto 0;max-width:430px;font-size:12.5px;line-height:2.1;letter-spacing:.14em;color:var(--muted)}
+.rule{display:flex;align-items:center;justify-content:center;gap:14px;margin:30px auto 0;width:min(280px,70%)}
+.rule i{display:block;height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(201,168,107,.55))}
+.rule i:last-child{background:linear-gradient(90deg,rgba(201,168,107,.55),transparent)}
+.rule span{font-size:10px;color:var(--gold);line-height:1}
+.gate .cta{margin-top:38px}
+.gate .cta .btn{padding:16px 46px}
+.moon-phases{display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,26px);margin-top:60px;color:rgba(201,168,107,.5)}
+.moon-phases svg{width:clamp(13px,2.6vw,20px);height:auto;display:block;animation:moon-breathe 7s ease-in-out infinite;animation-delay:calc(var(--k) * .35s)}
+.scroll-hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);font-size:9px;letter-spacing:.4em;
+  color:rgba(141,151,171,.55);display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.scroll-hint span{width:1px;height:26px;background:linear-gradient(180deg,rgba(201,168,107,.6),transparent);animation:hint-drop 3.6s ease-in-out infinite}
+
+.ritual{padding-top:112px;padding-bottom:100px}
+.ritual-head{text-align:center;margin-bottom:30px}
+.ritual-head h2{margin:0;font-family:var(--serif);font-weight:500;font-size:clamp(22px,3.4vw,30px);letter-spacing:.28em;color:#efe7d6;text-indent:.28em}
+.ritual-head .sub{margin:14px 0 0;font-size:12px;letter-spacing:.22em;color:var(--muted)}
+
+.panel{position:relative;padding:clamp(18px,2.6vw,30px);border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(11,18,31,.8),rgba(6,10,18,.84));
+  box-shadow:0 40px 90px -50px #000,inset 0 1px 0 rgba(255,255,255,.03)}
+.panel::before{content:"";position:absolute;inset:6px;border:1px solid rgba(201,168,107,.07);pointer-events:none}
+.panel-corner{position:absolute;width:12px;height:12px;border:1px solid rgba(201,168,107,.5);pointer-events:none}
+.panel-corner.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.panel-corner.tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.panel-corner.bl{bottom:-1px;left:-1px;border-right:0;border-top:0}
+.panel-corner.br{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.field{display:flex;align-items:center;gap:18px}
+.field label{font-size:10px;letter-spacing:.34em;color:var(--gold);white-space:nowrap;text-indent:.34em}
+.field input{flex:1;min-width:0;background:transparent;border:0;border-bottom:1px solid rgba(201,168,107,.2);
+  padding:11px 2px;color:var(--txt);font-family:var(--serif);font-size:15px;letter-spacing:.08em;outline:none;
+  transition:border-color .5s var(--ease)}
+.field input::placeholder{color:#5d6780}
+.field input:focus{border-color:rgba(201,168,107,.7)}
+.spreads{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:22px}
+.spread{position:relative;text-align:left;cursor:pointer;padding:12px 12px 11px 38px;
+  border:1px solid rgba(201,168,107,.14);background:rgba(8,13,22,.5);
+  transition:border-color .45s var(--ease),background .45s var(--ease),transform .45s var(--ease)}
+.spread .idx{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-family:var(--latin);
+  font-size:12px;color:rgba(201,168,107,.42);transition:color .45s var(--ease)}
+.spread b{display:block;font-family:var(--serif);font-size:14px;font-weight:500;letter-spacing:.14em;color:#d8dbe6;margin-bottom:5px}
+.spread .sdesc{display:block;font-size:10.5px;line-height:1.7;color:var(--muted2);letter-spacing:.04em}
+.spread:hover{border-color:rgba(201,168,107,.42);background:rgba(201,168,107,.05);transform:translateY(-2px)}
+.spread.on{border-color:rgba(201,168,107,.72);background:linear-gradient(180deg,rgba(201,168,107,.13),rgba(201,168,107,.02));
+  box-shadow:inset 0 0 30px rgba(201,168,107,.07)}
+.spread.on .idx,.spread.on b{color:var(--gold-lt)}
+.spread.on::after{content:"";position:absolute;right:8px;top:8px;width:4px;height:4px;background:var(--gold);transform:rotate(45deg)}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:22px}
+.hint{margin:14px 0 0;font-size:11px;line-height:1.9;letter-spacing:.08em;color:var(--muted2)}
+
+/* ================= 5. 牌桌 ================= */
+.table{position:relative;margin-top:34px;min-height:clamp(330px,46vh,540px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:26px 0 18px;
+  overflow:hidden;isolation:isolate}
+.table-rings{position:absolute;left:50%;top:50%;width:min(860px,98vw);aspect-ratio:1;
+  transform:translate(-50%,-50%);color:rgba(201,168,107,.16);pointer-events:none;z-index:0}
+.table-rings svg{width:100%;height:100%;animation:spin 260s linear infinite}
+.table-rings circle,.table-rings path,.table-rings line{fill:none;stroke:currentColor;stroke-width:.5}
+
+/* 牌堆 */
+.deck{position:absolute;left:50%;top:50%;width:var(--cw);height:calc(var(--cw) * 1.72);
+  transform:translate(-50%,-50%);z-index:2;transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.deck.done{opacity:0;transform:translate(-50%,-50%) scale(.9);pointer-events:none}
+.deck i{position:absolute;inset:0;display:block;border-radius:3px;
+  transform:translate(var(--bx,0),var(--by,0)) rotate(var(--br,0deg));
+  box-shadow:0 24px 40px -26px #000}
+.deck i svg{width:100%;height:100%;display:block;color:var(--gold)}
+.deck::after{content:"";position:absolute;inset:-26%;border-radius:50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(closest-side,rgba(201,168,107,.2),transparent 70%);animation:deck-breathe 6s ease-in-out infinite}
+.deck.shuffling i{animation:shuffle-out .56s var(--ease) 2 both;animation-delay:var(--sd)}
+
+/* 牌扇 */
+.fan{position:relative;z-index:4;width:100%;height:calc(var(--cw) * 1.72 + 46px);
+  display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;
+  transition:opacity .5s var(--ease),height .55s var(--ease)}
+.fan.open{opacity:1;pointer-events:auto}
+.fan.closing{opacity:0}
+.fan.empty{height:0;opacity:0;overflow:hidden;margin:0}
+.fan::before{content:"";position:absolute;left:50%;bottom:4%;width:min(780px,96%);height:300px;
+  transform:translateX(-50%);pointer-events:none;z-index:-1;opacity:0;transition:opacity .9s var(--ease);
+  background:radial-gradient(ellipse at 50% 62%,rgba(255,214,150,.16),rgba(120,150,220,.06) 45%,transparent 70%)}
+.fan.open::before{opacity:1}
+.fcard{position:absolute;bottom:0;left:50%;width:var(--cw);height:calc(var(--cw) * 1.72);touch-action:manipulation;
+  border:0;padding:0;background:none;cursor:pointer;
+  transform:translateX(-50%);transform-origin:50% 118%;
+  transition:transform .8s var(--ease),filter .4s var(--ease);will-change:transform}
+.fan.open .fcard{transform:translateX(-50%) translateY(var(--ty,0px)) rotate(var(--rot,0deg));
+  transition-delay:calc(var(--k) * 22ms)}
+.fan.open .fcard:hover,.fan.open .fcard.hot{
+  transform:translateX(-50%) translateY(calc(var(--ty,0px) - 30px)) rotate(var(--rot,0deg)) scale(1.06);
+  transition-delay:0s;z-index:9;filter:drop-shadow(0 22px 30px rgba(0,0,0,.8))}
+.fcard .fback{position:relative;width:100%;height:100%;border-radius:3px;overflow:hidden;
+  border:1px solid rgba(201,168,107,.5);
+  background:radial-gradient(120% 80% at 50% 4%,#132239 0%,#0a1424 44%,#050a13 100%);
+  box-shadow:inset 0 0 26px rgba(0,0,0,.85),0 16px 30px -18px #000}
+.fcard .fback svg{width:100%;height:100%;display:block;color:var(--gold)}
+.fcard .fback::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(114deg,transparent 34%,rgba(255,243,214,.16) 50%,transparent 66%);
+  transform:translateX(-140%)}
+.fan.open .fcard:hover .fback::after,.fan.open .fcard.hot .fback::after{transform:translateX(140%);transition:transform .9s var(--ease)}
+.fcard .fback::before{content:"";position:absolute;inset:-2px;border-radius:4px;pointer-events:none;
+  box-shadow:0 0 0 1px rgba(255,225,160,0),inset 0 0 22px rgba(201,168,107,0);
+  transition:box-shadow .35s var(--ease)}
+.fan.open .fcard:hover .fback::before,.fan.open .fcard.hot .fback::before{
+  box-shadow:0 0 22px rgba(255,220,150,.45),inset 0 0 26px rgba(201,168,107,.18)}
+
+/* 舞台 */
+.stage{position:relative;z-index:5;display:flex;flex-wrap:wrap;justify-content:center;
+  align-items:flex-start;gap:clamp(10px,2.6vw,34px);width:100%;min-height:1px}
+
+/* ================= 6. 卡牌 ================= */
+.slot{position:relative;width:var(--cw);padding-bottom:30px;opacity:0;pointer-events:none}
+.slot.live{opacity:1;pointer-events:auto}
+.slot .float{position:relative;z-index:1;perspective:1200px;perspective-origin:50% 45%;animation:float 6.6s ease-in-out infinite;animation-delay:var(--fd,0s);will-change:transform}
+.slot.hot .float{animation-play-state:paused}
+.slot .shadow{position:absolute;left:10%;right:10%;bottom:2px;height:20px;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,.92),rgba(0,0,0,.4) 52%,transparent 72%);
+  animation:shadow-breathe 6.6s ease-in-out infinite;animation-delay:var(--fd,0s)}
+.slot .shadow::after{content:"";position:absolute;inset:-60% -40%;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,rgba(255,214,150,.22),transparent 62%);opacity:.45}
+
+.card{position:relative;width:var(--cw);height:calc(var(--cw) * 1.72);
+  perspective:1100px;cursor:pointer;transform-style:preserve-3d;
+  transform:translateY(var(--lift,0px)) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--sc,1));
+  transition:transform .5s var(--ease);will-change:transform}
+.slot.hot .card{--lift:-24px;--sc:1.07}
+.slot.flipped .card{cursor:default}
+.slot-label{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:7px;
+  margin-top:10px;font-size:10px;letter-spacing:.3em;color:rgba(201,168,107,.8);text-indent:.3em;
+  opacity:0;transform:translateY(-4px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.slot-label::before{content:"";width:3px;height:3px;background:rgba(201,168,107,.8);transform:rotate(45deg)}
+.slot.live .slot-label{opacity:1;transform:none}
+.slot.flipped .slot-label{color:rgba(245,227,186,.95)}
+
+/* 外围气场：贴着牌边的光环，而不是一团雾 */
+.aura{position:absolute;inset:-18% -11%;pointer-events:none;z-index:-2;border-radius:50%;
+  background:radial-gradient(closest-side,transparent 50%,var(--aura,rgba(255,209,140,.72)) 81%,transparent 97%);
+  opacity:var(--aop,.8);transition:opacity .7s var(--ease),transform .7s var(--ease);
+  animation:aura-breathe 6.6s ease-in-out infinite;animation-delay:var(--fd,0s)}
+.aura::before{content:"";position:absolute;inset:8%;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,var(--aura,rgba(255,226,170,.85)) 0deg .9deg,transparent .9deg 15deg);
+  opacity:var(--rays,.14);animation:spin 80s linear infinite;
+  -webkit-mask:radial-gradient(closest-side,transparent 46%,#000 64%,transparent 90%);
+          mask:radial-gradient(closest-side,transparent 46%,#000 64%,transparent 90%)}
+.aura::after{content:"";position:absolute;inset:-16%;border-radius:50%;
+  background:radial-gradient(closest-side,var(--fog,transparent) 0%,transparent 68%);opacity:.35;
+  animation:fog-drift 18s ease-in-out infinite alternate}
+.slot.hot .aura{opacity:calc(var(--aop,.45) * 1.7);transform:scale(1.08)}
+
+/* 空间折射环 */
+.refract{position:absolute;inset:-14% -10%;pointer-events:none;z-index:-3;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 46%,transparent 52%,rgba(160,190,255,.07) 62%,rgba(255,220,160,.14) 66%,transparent 74%);
+  opacity:.75;animation:refract 9s ease-in-out infinite}
+.slot.hot .refract{opacity:1;animation-duration:4s}
+
+/* 边缘流光 */
+.rim,.rim-hot{position:absolute;inset:-1.5px;border-radius:4px;pointer-events:none;z-index:4;padding:1.5px;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude}
+.rim{opacity:.85;animation:rim-spin 7.5s linear infinite;
+  background:conic-gradient(from 0deg,rgba(255,228,170,0) 0deg,rgba(255,228,170,0) 286deg,rgba(255,236,190,.75) 330deg,#fff6dc 352deg,rgba(255,228,170,0) 360deg)}
+.rim-hot{opacity:0;transition:opacity .4s var(--ease);animation:rim-spin 1.9s linear infinite reverse;
+  background:conic-gradient(from 120deg,rgba(255,236,190,0) 0deg,rgba(255,236,190,0) 250deg,#fff8e2 340deg,rgba(255,236,190,0) 360deg)}
+.slot.hot .rim-hot,.slot.revealed .rim-hot{opacity:1}
+
+/* 卡牌本体 */
+.inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;
+  transition:transform .95s cubic-bezier(.34,.02,.2,1)}
+.slot.flipped .inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:3px;overflow:hidden;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden}
+
+/* 牌背 */
+.back{border:1px solid rgba(214,182,122,.62);
+  background:radial-gradient(120% 80% at 50% 4%,#162942 0%,#0c1a2e 44%,#060c16 100%);
+  box-shadow:inset 0 0 32px rgba(0,0,0,.8),inset 0 0 30px rgba(201,168,107,.06),0 0 0 1px rgba(255,235,190,.04)}
+.back .astro{width:100%;height:100%;display:block;color:var(--gold);overflow:visible}
+.back .ring{transform-box:fill-box;transform-origin:50% 50%}
+.slot.revealed .ring,.slot.flipped .ring{animation-play-state:paused}
+.back .ring.o{animation:spin 34s linear infinite}
+.back .ring.m{animation:spin 22s linear infinite reverse}
+.back .ring.i{animation:spin 54s linear infinite}
+.back .core{transform-box:fill-box;transform-origin:50% 50%;animation:core-pulse 3.6s ease-in-out infinite}
+.slot.hot .back .ring.o{animation-duration:5s}
+.slot.hot .back .ring.m{animation-duration:3.4s}
+.slot.hot .back .core{animation-duration:1.2s}
+.slot.charging .back .ring.o{animation-duration:1.6s}
+.slot.charging .back .ring.m{animation-duration:1.1s}
+.slot.flip-go .back .ring.o{animation-duration:.9s}
+.slot.flip-go .back .ring.m{animation-duration:.6s}
+
+/* 牌面 */
+.front{transform:rotateY(180deg);
+  border:1px solid rgba(214,182,122,.7);
+  background:
+    radial-gradient(80% 52% at 50% 0%,rgba(58,84,124,.6),transparent 66%),
+    linear-gradient(180deg,#0f1f34 0%,#0a1526 50%,#060d18 100%);
+  display:flex;flex-direction:column;align-items:center;padding:7% 7.5% 6%;
+  box-shadow:inset 0 0 34px rgba(0,0,0,.8),inset 0 0 0 1px rgba(255,232,190,.05)}
+.front::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 44%,var(--accent,#c9a86b),transparent 62%);
+  opacity:.2;transition:opacity .8s var(--ease)}
+.slot.revealed .front::before{opacity:.3}
+.slot.hot .front::before{opacity:.34}
+.fr1,.fr2{position:absolute;pointer-events:none}
+.fr1{inset:5px;border:1px solid rgba(201,168,107,.5)}
+.fr2{inset:9px;border:1px solid rgba(201,168,107,.16)}
+.cnr{position:absolute;width:8px;height:8px;border:1px solid rgba(201,168,107,.65);pointer-events:none}
+.cnr.tl{top:5px;left:5px;border-right:0;border-bottom:0}
+.cnr.tr{top:5px;right:5px;border-left:0;border-bottom:0}
+.cnr.bl{bottom:5px;left:5px;border-right:0;border-top:0}
+.cnr.br{bottom:5px;right:5px;border-left:0;border-top:0}
+.num{font-family:var(--latin);font-size:calc(var(--cw) * .075);letter-spacing:.22em;text-indent:.22em;
+  color:rgba(238,214,164,.96);line-height:1;margin-top:2px;text-shadow:0 0 14px rgba(201,168,107,.45)}
+.art{flex:1;width:100%;display:flex;align-items:center;justify-content:center;color:var(--accent,#c9a86b);
+  opacity:.2;transform:translateY(5px);transition:opacity .85s var(--ease) .35s,transform .85s var(--ease) .35s}
+.art svg{width:100%;height:100%;overflow:visible}
+.front.rev .art svg{transform:rotate(180deg)}
+.plate{width:100%;text-align:center;opacity:.2;transform:translateY(4px);
+  transition:opacity .8s var(--ease) .45s,transform .8s var(--ease) .45s}
+.plate .div{display:block;width:56%;height:1px;margin:0 auto 7px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,107,.6),transparent)}
+.plate .en{font-family:var(--latin);font-size:calc(var(--cw) * .054);letter-spacing:.24em;color:#97a3b9;
+  text-transform:uppercase;text-indent:.24em;line-height:1.5}
+.plate .cn{font-family:var(--serif);font-size:calc(var(--cw) * .105);letter-spacing:.18em;color:var(--gold-lt);
+  margin-top:2px;text-indent:.18em}
+.ori{margin-top:5px;font-size:calc(var(--cw) * .052);letter-spacing:.32em;text-indent:.32em;line-height:1;
+  color:#d59b90;opacity:0;transition:opacity .6s ease .9s}
+.front.rev .ori{opacity:1}
+.veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#04070d,#010306);
+  opacity:1;transition:opacity .95s ease .22s}
+.slot.revealed .veil{opacity:0}
+.slot.revealed .art{opacity:1;transform:none}
+.slot.revealed .plate{opacity:1;transform:none}
+/* 牌面光照扫过 */
+.front .sheen{position:absolute;inset:-20%;pointer-events:none;opacity:0;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,245,220,.5) 50%,transparent 62%)}
+.slot.revealed .sheen{animation:sheen 1.5s ease .55s 1 both}
+
+/* 星屑 */
+.dust{position:absolute;inset:-26% -20%;pointer-events:none;z-index:3;transition:transform .8s var(--ease)}
+.dust b{position:absolute;left:var(--x);top:var(--y);width:var(--s,2px);height:var(--s,2px);border-radius:50%;
+  background:#fff0cc;box-shadow:0 0 9px 2px rgba(255,214,140,.9),0 0 18px 4px rgba(255,190,110,.35);opacity:.6;
+  animation:drift var(--t,7s) ease-in-out infinite alternate;animation-delay:var(--dl,0s)}
+.slot.hot .dust{transform:scale(.84)}
+.slot.hot .dust b{animation-duration:2.4s;opacity:.95}
+
+/* 落位/翻牌一次性能量 */
+.wave,.blade,.rune,.converge{position:absolute;pointer-events:none;opacity:0}
+.wave{left:50%;top:50%;width:130%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+  border:1px solid rgba(255,226,170,.75);z-index:1}
+.slot.landed .wave{animation:wave .95s var(--ease) 1 both}
+.blade{left:50%;top:-14%;width:2px;height:128%;transform:translateX(-50%);z-index:6;
+  background:linear-gradient(180deg,transparent,#ffeab6 42%,#fffdf4 50%,#ffeab6 58%,transparent);
+  box-shadow:0 0 26px 9px rgba(255,220,150,.55),0 0 70px 22px rgba(255,200,120,.25)}
+.slot.blade-on .blade{animation:blade .5s cubic-bezier(.3,0,.2,1) 1 both}
+.rune{left:50%;top:50%;width:190%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:-1;
+  color:rgba(255,228,170,.75);border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,228,170,.85) 0deg .6deg,transparent .6deg 12deg);
+  -webkit-mask:radial-gradient(closest-side,transparent 55%,#000 58%,#000 71%,transparent 74%);
+          mask:radial-gradient(closest-side,transparent 55%,#000 58%,#000 71%,transparent 74%)}
+.slot.revealed .rune{animation:runeburst 1.7s var(--ease) 1 both}
+.converge{inset:-8%;border-radius:50%;z-index:5;
+  background:radial-gradient(closest-side,transparent 52%,rgba(255,232,180,.85) 56%,transparent 66%)}
+.slot.hot .converge{animation:converge .95s var(--ease) 1 both}
+
+/* 翻牌阶段类 */
+.slot.charging .card{--sc:1.03}
+.slot.charging .aura{opacity:calc(var(--aop,.45) * 2.1);transform:scale(1.14)}
+.slot.charging .dust{transform:scale(.7)}
+.slot.charging .rim-hot{opacity:1;animation-duration:.7s}
+.slot.flip-go .inner{transform:rotateY(180deg)}
+.slot.flip-go .aura{opacity:calc(var(--aop,.45) * 2.6)}
+.slot.flipped .aura{opacity:calc(var(--aop,.45) * 1.4)}
+
+/* 主题气场 */
+.slot.theme-star{--aura:rgba(255,238,184,.95);--aop:.34;--rays:.24;--fog:rgba(255,242,205,.42)}
+.slot.theme-moon{--aura:rgba(172,202,255,.85);--aop:.32;--rays:.16;--fog:rgba(150,185,255,.45)}
+.slot.theme-sun{--aura:rgba(255,216,142,1);--aop:.38;--rays:.3;--fog:rgba(255,192,112,.45)}
+.slot.theme-death{--aura:rgba(158,118,200,.7);--aop:.3;--rays:.1;--fog:rgba(96,64,148,.5)}
+.slot.theme-wheel{--aura:rgba(255,228,172,.9);--aop:.32;--rays:.22;--fog:rgba(204,172,120,.34)}
+.slot.theme-priestess{--aura:rgba(196,214,255,.88);--aop:.32;--rays:.18;--fog:rgba(164,192,255,.45)}
+.slot.theme-magician{--aura:rgba(255,226,164,.95);--aop:.33;--rays:.26;--fog:rgba(244,202,142,.36)}
+.slot.theme-lovers{--aura:rgba(255,212,206,.8);--aop:.32;--rays:.18;--fog:rgba(255,204,214,.34)}
+.slot.theme-wheel .aura::before{animation-duration:26s}
+.slot.theme-star .aura::before{animation-duration:40s}
+.slot.theme-sun .aura::before{animation-duration:32s}
+
+/* ================= 7. 解读 ================= */
+.reading{margin-top:52px;display:grid;gap:16px}
+.reading[hidden]{display:none}
+.reading-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding-bottom:14px;border-bottom:1px solid rgba(201,168,107,.14)}
+.rh-kicker{font-size:10px;letter-spacing:.36em;color:var(--gold);text-indent:.36em}
+.rh-q{margin-top:9px;font-family:var(--serif);font-size:clamp(16px,2.4vw,20px);letter-spacing:.08em;color:#f4eeDF;line-height:1.6}
+.rh-q.empty{color:var(--muted);font-size:14px;letter-spacing:.12em;font-family:inherit}
+.rh-time{font-size:10px;letter-spacing:.2em;color:var(--muted2);white-space:nowrap}
+.verdict{position:relative;border:1px solid rgba(201,168,107,.22);padding:32px 24px;text-align:center;
+  background:radial-gradient(70% 120% at 50% 0%,rgba(201,168,107,.14),transparent 62%),
+             linear-gradient(180deg,rgba(12,19,32,.72),rgba(6,10,18,.5));animation:rise-in .9s var(--ease) both}
+.vw{font-family:var(--serif);font-size:clamp(44px,9vw,64px);letter-spacing:.2em;color:var(--gold-lt);
+  text-indent:.2em;line-height:1;text-shadow:0 0 46px rgba(201,168,107,.4)}
+.verdict p{margin:16px auto 0;max-width:560px;font-size:13px;line-height:2.1;color:#c9d0dd}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:14px}
+.rc{position:relative;padding:20px 19px 22px;border:1px solid rgba(201,168,107,.14);
+  background:linear-gradient(180deg,rgba(11,18,31,.74),rgba(6,10,18,.62));animation:rise-in .85s var(--ease) both;
+  animation-delay:calc(var(--i) * 110ms + 120ms)}
+.rc::before,.rc::after{content:"";position:absolute;width:9px;height:9px;border:1px solid rgba(201,168,107,.42);pointer-events:none}
+.rc::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.rc::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.rc-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.rc-pos{font-size:9.5px;letter-spacing:.3em;color:var(--gold);text-indent:.3em}
+.rc-tag{font-size:9px;letter-spacing:.18em;padding:2px 7px;border:1px solid rgba(150,170,200,.3);color:#a9b7cd}
+.rc-tag.rev{border-color:rgba(213,155,144,.45);color:#d8a89f}
+.rc h3{margin:12px 0 3px;font-family:var(--serif);font-size:20px;font-weight:500;letter-spacing:.14em;color:#f6f0e2}
+.rc-en{font-family:var(--latin);font-size:9.5px;letter-spacing:.24em;color:var(--muted2);text-transform:uppercase}
+.rc-kw{margin:12px 0 9px;font-size:10.5px;letter-spacing:.16em;color:rgba(201,168,107,.8)}
+.rc p{margin:0;font-size:12.8px;line-height:2.05;color:#c3cbd9}
+.synth{position:relative;padding:26px clamp(18px,3vw,30px);border:1px solid rgba(201,168,107,.18);
+  background:linear-gradient(160deg,rgba(30,26,50,.44),rgba(8,12,20,.74));animation:rise-in .9s var(--ease) both;
+  animation-delay:calc(var(--n,3) * 110ms + 380ms)}
+.synth h3{margin:0 0 14px;font-family:var(--serif);font-weight:500;font-size:14px;letter-spacing:.34em;
+  color:var(--gold-lt);text-indent:.34em;display:flex;align-items:center;gap:12px}
+.synth h3::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,107,.3),transparent)}
+.synth p{margin:0 0 12px;font-size:13px;line-height:2.15;color:#c6cedb}
+.synth p:last-child{margin-bottom:0}
+.reading-foot{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:4px}
+.disclaim{font-size:10.5px;letter-spacing:.14em;color:#5f6880;text-align:center;line-height:1.9}
+
+/* ================= 8. 记录 / 词典 ================= */
+.hist{margin-top:52px;padding-top:20px;border-top:1px solid rgba(201,168,107,.12)}
+.hist-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.hist-head h2{margin:0;font-family:var(--serif);font-weight:500;font-size:12px;letter-spacing:.34em;color:var(--muted);text-indent:.34em}
+.link-btn{background:none;border:0;padding:4px;cursor:pointer;font-size:10.5px;letter-spacing:.2em;color:var(--muted2);transition:color .4s}
+.link-btn:hover{color:var(--gold)}
+.hist ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.hist li{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding:10px 13px;
+  border:1px solid rgba(201,168,107,.08);background:rgba(8,13,22,.42);font-size:11px;color:var(--muted)}
+.h-time{color:#5f6880;letter-spacing:.1em;font-variant-numeric:tabular-nums}
+.h-spread{color:rgba(201,168,107,.85);letter-spacing:.16em}
+.h-cards{color:#a9b2c5;letter-spacing:.06em}
+
+.modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
+  padding:clamp(10px,3vw,32px);background:rgba(2,4,9,.88);opacity:0;transition:opacity .5s var(--ease)}
+.modal[hidden]{display:none}
+.modal.open{opacity:1}
+.sheet{position:relative;width:min(940px,100%);max-height:88vh;overflow:auto;overscroll-behavior:contain;
+  padding:clamp(18px,3vw,30px);border:1px solid rgba(201,168,107,.28);
+  background:linear-gradient(180deg,#0a1220,#070d17);box-shadow:0 60px 120px -50px #000;
+  transform:translateY(16px) scale(.99);opacity:0;transition:transform .55s var(--ease),opacity .55s var(--ease);
+  scrollbar-width:thin;scrollbar-color:rgba(201,168,107,.3) transparent}
+.modal.open .sheet{transform:none;opacity:1}
+.sheet::-webkit-scrollbar{width:6px}
+.sheet::-webkit-scrollbar-thumb{background:rgba(201,168,107,.25)}
+.sheet-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:2px 0 14px;margin-bottom:10px;background:linear-gradient(180deg,#0a1220 72%,rgba(10,18,32,0))}
+.sheet-head h2{margin:0;font-family:var(--serif);font-weight:500;font-size:13px;letter-spacing:.4em;color:var(--gold-lt);text-indent:.4em}
+.icon-btn{width:32px;height:32px;display:grid;place-items:center;cursor:pointer;border:1px solid rgba(201,168,107,.3);
+  background:none;color:var(--gold);border-radius:50%;font-size:12px;transition:.4s var(--ease)}
+.icon-btn:hover{background:rgba(201,168,107,.12);border-color:rgba(201,168,107,.7)}
+.atlas{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:7px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 4px 9px;
+  border:1px solid rgba(201,168,107,.1);background:rgba(255,250,240,.02);cursor:pointer;transition:.3s var(--ease);color:var(--txt)}
+.tile:hover{border-color:rgba(201,168,107,.4);background:rgba(201,168,107,.06);transform:translateY(-1px)}
+.tile.on{border-color:rgba(201,168,107,.75);background:rgba(201,168,107,.1);box-shadow:0 0 22px -8px rgba(201,168,107,.5)}
+.t-glyph{font-size:17px;line-height:1;font-family:"Segoe UI Symbol","Apple Symbols",serif}
+.t-name{font-size:10.5px;letter-spacing:.06em;color:#bcc4d4}
+.atlas-detail{margin-top:20px;padding-top:20px;border-top:1px solid rgba(201,168,107,.14)}
+.atlas-detail h3{margin:0 0 4px;font-family:var(--serif);font-weight:500;font-size:22px;letter-spacing:.12em;color:#f6f0e2}
+.ad-en{font-family:var(--latin);font-size:9.5px;letter-spacing:.24em;color:var(--muted2);text-transform:uppercase}
+.ad-kw{margin:12px 0;font-size:10.5px;letter-spacing:.16em;color:rgba(201,168,107,.8)}
+.ad-row{margin:10px 0 0;font-size:12.8px;line-height:2;color:#c3cbd9}
+.ad-row b{display:inline-block;min-width:34px;margin-right:10px;font-weight:400;font-size:9.5px;letter-spacing:.24em;color:var(--gold)}
+.ad-empty{font-size:11px;color:#5f6880;letter-spacing:.12em}
+
+/* ================= 9. 飞牌 / 火花 ================= */
+.flyer{position:fixed;z-index:80;pointer-events:none;border-radius:3px;
+  box-shadow:0 30px 60px -20px #000,0 0 34px rgba(255,214,140,.45)}
+.flyer svg{width:100%;height:100%;display:block;color:var(--gold)}
+.spark{position:fixed;z-index:79;width:4px;height:4px;border-radius:50%;pointer-events:none;
+  background:#ffe6b4;box-shadow:0 0 10px 3px rgba(255,206,130,.65);animation:spark-out .7s ease-out forwards}
+
+/* ================= 10. 动画 ================= */
+@keyframes scene-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes scene-out{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-8px)}}
+@keyframes rise-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes orbit-spin{from{transform:translate(-50%,-52%) rotate(0)}to{transform:translate(-50%,-52%) rotate(360deg)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-16px) rotate(.4deg)}}
+@keyframes shadow-breathe{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(.82);opacity:.5}}
+@keyframes aura-breathe{0%,100%{opacity:calc(var(--aop,.45) * .8);transform:scale(.97)}50%{opacity:calc(var(--aop,.45) * 1.3);transform:scale(1.04)}}
+@keyframes fog-drift{from{transform:translate3d(-3%,2%,0) scale(1)}to{transform:translate3d(4%,-3%,0) scale(1.08)}}
+@keyframes refract{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.05);opacity:.95}}
+@keyframes rim-spin{to{transform:rotate(360deg)}}
+@keyframes core-pulse{0%,100%{transform:scale(.86);opacity:.65}50%{transform:scale(1.18);opacity:1}}
+@keyframes drift{from{transform:translate3d(0,0,0) scale(.7);opacity:.2}to{transform:translate3d(var(--dx,8px),var(--dy,-14px),0) scale(1.15);opacity:.95}}
+@keyframes wave{0%{opacity:.9;transform:translate(-50%,-50%) scale(.55);border-width:2px}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.55);border-width:1px}}
+@keyframes blade{0%{opacity:0;transform:translateX(-50%) scaleY(.15)}
+  18%{opacity:1;transform:translateX(-50%) scaleY(1)}
+  70%{opacity:1;transform:translateX(-50%) scaleY(1)}
+  100%{opacity:0;transform:translateX(-50%) scaleY(1)}}
+@keyframes runeburst{0%{opacity:0;transform:translate(-50%,-50%) scale(.5) rotate(0)}
+  25%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(1.25) rotate(60deg)}}
+@keyframes converge{0%{opacity:0;transform:scale(1.4)}25%{opacity:.95}100%{opacity:0;transform:scale(.85)}}
+@keyframes sheen{0%{opacity:0;transform:translateX(-30%)}30%{opacity:.85}100%{opacity:0;transform:translateX(30%)}}
+@keyframes spark-out{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--sx,0),var(--sy,-30px)) scale(.2)}}
+@keyframes moon-breathe{0%,100%{opacity:.42}50%{opacity:.85}}
+@keyframes hint-drop{0%,100%{transform:translateY(-2px);opacity:.35}50%{transform:translateY(6px);opacity:.9}}
+@keyframes deck-breathe{0%,100%{opacity:.45;transform:scale(.96)}50%{opacity:.9;transform:scale(1.04)}}
+@keyframes flicker{0%,100%{opacity:.55;transform:scale(1)}35%{opacity:.8;transform:scale(1.03)}55%{opacity:.45;transform:scale(.99)}78%{opacity:.7;transform:scale(1.02)}}
+@keyframes drift-a{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(6%,4%,0) scale(1.06)}}
+@keyframes drift-b{from{transform:translate3d(0,0,0) scale(1.04)}to{transform:translate3d(-5%,6%,0) scale(1)}}
+@keyframes drift-c{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-46%) scale(1.05)}}
+@keyframes shuffle-out{0%{transform:translate(var(--bx,0),var(--by,0)) rotate(var(--br,0deg))}
+  26%{transform:translate(calc(var(--bx,0px) + 26px),calc(var(--by,0px) - 10px)) rotate(calc(var(--br,0deg) + 8deg))}
+  52%{transform:translate(calc(var(--bx,0px) - 23px),calc(var(--by,0px) + 8px)) rotate(calc(var(--br,0deg) - 7deg))}
+  76%{transform:translate(calc(var(--bx,0px) + 10px),calc(var(--by,0px) - 15px)) rotate(calc(var(--br,0deg) + 4deg))}
+  100%{transform:translate(var(--bx,0),var(--by,0)) rotate(var(--br,0deg))}}
+
+/* ================= 11. 响应式 ================= */
+@media (max-width:1080px){.spreads{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:860px){.top-moon span{display:none}}
+@media (max-width:640px){
+  :root{--cw:clamp(92px,23vw,124px)}
+  .spreads{grid-template-columns:1fr 1fr}
+  .ritual{padding-top:100px;padding-bottom:80px}
+  .field{flex-direction:column;align-items:stretch;gap:9px}
+  .btn{padding:14px 26px;font-size:11.5px;min-height:44px}
+  .gate{padding:100px 18px 80px}
+  .table{min-height:clamp(300px,44vh,420px)}
+  .rgrid{grid-template-columns:1fr}
+  .atlas{grid-template-columns:repeat(auto-fill,minmax(74px,1fr))}
+  .aura{inset:-30% -18%}
+  .dust b:nth-child(n+7){display:none}
+  .aura::before{animation-duration:120s}
+  .slot .refract{animation:none;opacity:.55}
+  .table-rings svg{animation-duration:420s}
+  .fan.open .fcard{transition-duration:.62s}
+  .slot .shadow{height:18px}
+  .brand-txt b{font-size:13px;letter-spacing:.34em}
+  .nav-btn{font-size:10.5px;letter-spacing:.2em}
+}
+@media (hover:none){
+  .slot.hot .card{--lift:-8px;--sc:1.02}
+  .fan.open .fcard:hover{transform:translateX(-50%) translateY(var(--ty,0px)) rotate(var(--rot,0deg))}
+  .fan.open .fcard:active{transform:translateX(-50%) translateY(calc(var(--ty,0px) - 16px)) rotate(var(--rot,0deg)) scale(1.03)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  .nebula,.candle,.gate-orbit,.table-rings svg,.slot .float,.slot .shadow,.slot .aura,.ring,.core{animation:none !important}
+  .slot{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="sky" aria-hidden="true">
+  <div class="nebula n1"></div><div class="nebula n2"></div><div class="nebula n3"></div>
+  <div class="candle c1"></div><div class="candle c2"></div><div class="vignette"></div>
+</div>
+
+<svg aria-hidden="true" width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="coreGrad">
+      <stop offset="0" stop-color="#fff6dc" stop-opacity=".95"/>
+      <stop offset="45%" stop-color="#ffd894" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#c9a86b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <button class="brand" id="brandBtn" aria-label="回到首页">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".8">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 2.6 L13.5 10.5 L21.4 12 L13.5 13.5 L12 21.4 L10.5 13.5 L2.6 12 L10.5 10.5 Z" fill="currentColor" fill-opacity=".22"/>
+    </svg>
+    <span class="brand-txt"><b>TAROT</b><i>月影塔罗</i></span>
+  </button>
+  <nav class="nav" aria-label="主导航">
+    <button class="nav-btn on" data-scene="home">首页</button>
+    <button class="nav-btn" data-scene="ritual">占卜</button>
+    <button class="nav-btn" id="navAtlas">牌义</button>
+  </nav>
+  <div class="top-right">
+    <div class="top-moon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.2 2.6a9.5 9.5 0 1 0 6.2 13.5 7.4 7.4 0 0 1-6.2-13.5z"/></svg>
+      <span>今夜 · 渐亏</span>
+    </div>
+    <button class="sound-btn on" id="soundBtn" type="button" aria-pressed="true" aria-label="关闭声音" title="声音：开">
+      <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="scene scene-gate active" id="scene-home">
+    <div class="gate">
+      <svg class="gate-orbit" viewBox="0 0 400 400" aria-hidden="true">
+        <circle cx="200" cy="200" r="196"/><circle cx="200" cy="200" r="168" stroke-dasharray="1 7"/>
+        <circle cx="200" cy="200" r="120"/><circle cx="200" cy="200" r="64" stroke-dasharray="2 5"/>
+        <path d="M200 4 V44 M200 356 V396 M4 200 H44 M356 200 H396"/>
+        <path d="M200 64 L206 200 L200 336 L194 200 Z"/><path d="M64 200 L200 194 L336 200 L200 206 Z"/>
+        <path d="M104 104 L200 200 L296 296 M296 104 L200 200 L104 296" stroke-opacity=".5"/>
+      </svg>
+      <div class="gate-inner">
+        <p class="eyebrow">Moonlight · Tarot · 78</p>
+        <h1>在星辰与月光之间</h1>
+        <p class="lede">聆听你内心的指引</p>
+        <div class="rule"><i></i><span>✦</span><i></i></div>
+        <p class="note">塔罗不只是占卜，更是一次与自我对话的旅程。</p>
+        <div class="cta"><button class="btn btn-primary" id="enterBtn">开始占卜</button></div>
+        <div class="moon-phases" id="moonPhases" aria-hidden="true"></div>
+      </div>
+      <div class="scroll-hint" aria-hidden="true"><span></span>SCROLL</div>
+    </div>
+  </section>
+
+  <section class="scene" id="scene-ritual">
+    <div class="ritual wrap">
+      <div class="ritual-head">
+        <p class="eyebrow" style="margin-bottom:14px">The Reading</p>
+        <h2>静 心 · 抽 牌</h2>
+        <p class="sub">闭眼三秒，把想问的事在心里说一遍</p>
+      </div>
+
+      <div class="panel">
+        <span class="panel-corner tl"></span><span class="panel-corner tr"></span>
+        <span class="panel-corner bl"></span><span class="panel-corner br"></span>
+        <div class="field">
+          <label for="q">你的问题</label>
+          <input id="q" type="text" maxlength="60" autocomplete="off" placeholder="例如：现在这份工作还值得继续吗？（可留空）" />
+        </div>
+        <div class="spreads" id="spreads" role="group" aria-label="选择牌阵"></div>
+        <div class="controls">
+          <button class="btn btn-primary" id="drawBtn">洗牌 · 展开牌扇</button>
+          <button class="btn btn-ghost btn-sm" id="resetBtn">重新开始</button>
+          <button class="btn btn-ghost btn-sm" id="atlasBtn">牌义词典</button>
+        </div>
+        <p class="hint" id="hint">选好牌阵后点「洗牌」，牌扇展开后由你亲手挑选每一张。</p>
+      </div>
+
+      <div class="table" id="table">
+        <div class="table-rings" aria-hidden="true">
+          <svg viewBox="0 0 400 400">
+            <circle cx="200" cy="200" r="198"/><circle cx="200" cy="200" r="162" stroke-dasharray="1 8"/>
+            <circle cx="200" cy="200" r="112"/><circle cx="200" cy="200" r="58" stroke-dasharray="2 6"/>
+            <path d="M200 2 V38 M200 362 V398 M2 200 H38 M362 200 H398"/>
+            <path d="M86 86 L200 200 L314 314 M314 86 L200 200 L86 314" stroke-opacity=".45"/>
+            <path d="M200 38 L205 200 L200 362 L195 200 Z" stroke-opacity=".6"/>
+            <path d="M38 200 L200 195 L362 200 L200 205 Z" stroke-opacity=".6"/>
+            <circle cx="200" cy="86" r="1.6" fill="currentColor" stroke="none" fill-opacity=".7"/>
+            <circle cx="314" cy="200" r="1.2" fill="currentColor" stroke="none" fill-opacity=".6"/>
+            <circle cx="200" cy="314" r="1.4" fill="currentColor" stroke="none" fill-opacity=".5"/>
+            <circle cx="86" cy="200" r="1.2" fill="currentColor" stroke="none" fill-opacity=".6"/>
+          </svg>
+        </div>
+        <div class="deck" id="deck" aria-hidden="true"></div>
+        <div class="fan" id="fan" aria-label="牌扇"></div>
+        <div class="stage" id="stage" aria-live="polite"></div>
+      </div>
+
+      <section class="reading" id="reading" hidden></section>
+      <section class="hist" id="hist" hidden></section>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="牌义词典">
+    <div class="sheet-head"><h2>牌义词典 · 78</h2><button class="icon-btn" id="closeAtlas" aria-label="关闭">✕</button></div>
+    <div class="atlas" id="atlasGrid"></div>
+    <div class="atlas-detail" id="atlasDetail"><p class="ad-empty">点击上方任意一张牌，查看它的正位与逆位含义。</p></div>
+  </div>
+</div>
+
+<script>
+/* ============ 数据：22 张大阿卡纳 ============ */
+const MAJOR_DATA = [
+["愚者","The Fool","0","♅","自由 · 冒险 · 纯真","全新的开始，带着好奇迈出第一步，不必等万事俱备。","鲁莽或逃避，还没看清脚下就起跳，先想清楚代价再行动。"],
+["魔术师","The Magician","I","☿","创造 · 意志 · 行动","资源与才能早已在你手中，专注意志，就能把想法变成现实。","能力被浪费或用在欺瞒上，留意言过其实与操控。"],
+["女祭司","The High Priestess","II","☽","直觉 · 静默 · 潜意识","答案在静处，信任直觉与梦境的提示，此刻不必急着表态。","忽视内心的声音，秘密与误解滋生，或被表象迷惑。"],
+["皇后","The Empress","III","♀","丰饶 · 滋养 · 感官","生机与创造力涌现，温柔地照顾自己与他人，收获正在成形。","过度付出或依赖，创造力停滞，先把自己滋养好。"],
+["皇帝","The Emperor","IV","♈","秩序 · 权威 · 结构","建立规则与边界，以稳健掌控局面，可靠的支持已经到位。","僵化、控制欲或权威失衡，规则需要重新协商。"],
+["教皇","The Hierophant","V","♉","传统 · 指引 · 信念","寻求导师与体系，采用经过验证的方法，信念带来安定。","教条束缚或反叛体制，需要找到属于自己的信仰。"],
+["恋人","The Lovers","VI","♊","结合 · 选择 · 价值观","心意相通的联结，也意味着忠于内心做出重要选择。","关系失衡、价值冲突或犹豫不决，先厘清真正想要的。"],
+["战车","The Chariot","VII","♋","前进 · 意志 · 胜利","方向明确、全力推进，驾驭对立的力量冲向目标。","失控、方向摇摆或用力过猛，先勒住缰绳再出发。"],
+["力量","Strength","VIII","♌","勇气 · 温柔 · 自制","以柔克刚，用耐心与善意驯服内在的野性，你比想象中强大。","自我怀疑、情绪失控或硬撑，需要承认脆弱并休息。"],
+["隐士","The Hermit","IX","♍","独处 · 内省 · 求真","暂时退场，向内寻找答案，独处是此刻的养分。","过度封闭、逃避人群，孤独变成牢笼，别拒绝必要的建议。"],
+["命运之轮","Wheel of Fortune","X","♃","转机 · 循环 · 时机","局势开始转动，抓住上升的时机，接受变化本身。","停滞或反复，抗拒变化让循环更难受，调整节奏再等一等。"],
+["正义","Justice","XI","♎","公正 · 因果 · 抉择","以事实与理性权衡，付出与回报即将得到平衡。","偏颇、逃避责任或不公，需要诚实面对自己那一份。"],
+["倒吊人","The Hanged Man","XII","♆","暂停 · 牺牲 · 换角度","主动暂停，换一个视角，此刻的等待会带来顿悟。","无谓的拖延与自我牺牲，卡在原地需要做出决定。"],
+["死神","Death","XIII","♏","结束 · 蜕变 · 放手","一个阶段真正结束，清空旧物才能迎来重生。","拒绝放手、拖着不肯结束，转变被延后但不会消失。"],
+["节制","Temperance","XIV","♐","平衡 · 调和 · 耐心","融合对立，调整节奏，恰到好处的耐心带来疗愈。","失衡、过度或匮乏，急躁打乱了本该自然的节奏。"],
+["恶魔","The Devil","XV","♑","束缚 · 欲望 · 阴影","看见让你上瘾或受困的东西，承认欲望才能松开锁链。","开始觉察并挣脱依赖，枷锁其实从来没有上锁。"],
+["高塔","The Tower","XVI","♂","崩塌 · 真相 · 突变","虚假的结构被击碎，痛苦但必要的清理，为真实腾出空间。","内部动摇尚未爆发，或勉强维持摇摇欲坠的局面，及早止损。"],
+["星星","The Star","XVII","♒","希望 · 疗愈 · 指引","风暴之后的宁静与希望，温柔地相信未来，灵感正在回归。","信心动摇、自我怀疑，希望仍在，只是暂时被云遮住。"],
+["月亮","The Moon","XVIII","♓","幻象 · 潜意识 · 不安","情绪与迷雾之中，别急着下判断，让真相自己浮出水面。","迷雾渐散，误会解开，恐惧被看清后就缩小了。"],
+["太阳","The Sun","XIX","☉","光明 · 成功 · 喜悦","坦荡明亮的结果，身心舒展，值得庆祝的时刻到了。","喜悦被延迟或打了折扣，阳光仍在，只是暂时被遮住。"],
+["审判","Judgement","XX","♇","觉醒 · 召唤 · 总结","旧账清算，听见内心的召唤，做出决定性的回应。","逃避总结与面对，反复质问自己，宽恕之后才能向前。"],
+["世界","The World","XXI","♄","圆满 · 完成 · 整合","一个循环圆满收束，收获成果，准备进入更大的舞台。","差最后一步没能闭环，或不愿结束，收尾工作仍待完成。"]
+];
+
+/* ============ 数据：四组小阿卡纳 ============ */
+const SUITS = [
+  {id:"wands",     cn:"权杖", en:"Wands",     sym:"♣", color:"#b3651d", theme:"行动 · 热情 · 意志"},
+  {id:"cups",      cn:"圣杯", en:"Cups",      sym:"♥", color:"#2f6f9f", theme:"情感 · 关系 · 直觉"},
+  {id:"swords",    cn:"宝剑", en:"Swords",    sym:"♠", color:"#4a5578", theme:"思维 · 沟通 · 真相"},
+  {id:"pentacles", cn:"星币", en:"Pentacles", sym:"♦", color:"#3f7a52", theme:"物质 · 工作 · 身体"}
+];
+
+const RANKS = [
+  {cn:"王牌", en:"Ace",    num:"A"},
+  {cn:"二",   en:"Two",    num:"II"},
+  {cn:"三",   en:"Three",  num:"III"},
+  {cn:"四",   en:"Four",   num:"IV"},
+  {cn:"五",   en:"Five",   num:"V"},
+  {cn:"六",   en:"Six",    num:"VI"},
+  {cn:"七",   en:"Seven",  num:"VII"},
+  {cn:"八",   en:"Eight",  num:"VIII"},
+  {cn:"九",   en:"Nine",   num:"IX"},
+  {cn:"十",   en:"Ten",    num:"X"},
+  {cn:"侍从", en:"Page",   num:"P"},
+  {cn:"骑士", en:"Knight", num:"N"},
+  {cn:"王后", en:"Queen",  num:"Q"},
+  {cn:"国王", en:"King",   num:"K"}
+];
+
+/* 每张牌：[关键词, 正位, 逆位] */
+const MINOR = {
+  wands: [
+    ["灵感 · 起点 · 行动力","灵感之火点燃，新的热情与机会出现，勇敢开始。","计划延迟或动力不足，火种还没找到落点。"],
+    ["规划 · 远见 · 抉择","站在起点做长远规划，手握选择权，视野正在打开。","犹豫不决或计划落空，害怕走出舒适区。"],
+    ["拓展 · 回响 · 合作","早期的努力开始有回响，合作与拓展带来实质进展。","延误、目光短浅，等待船归时先检查航线。"],
+    ["安稳 · 庆祝 · 归属","稳定的归宿与庆祝，家庭和团队的和谐让人安心。","归属感不稳或庆祝被推迟，根基需要修补。"],
+    ["竞争 · 分歧 · 混战","竞争与摩擦，众人各执一词，混乱中守住自己的立场。","冲突降温，开始学会放下无谓的较量。"],
+    ["胜利 · 认可 · 自信","胜利与被看见，自信地接受掌声，领导力获得承认。","缺乏认可或骄傲失度，别把成败全押在外界评价上。"],
+    ["坚守 · 防御 · 立场","守住阵地，抵御质疑，你的立场值得坚持下去。","疲于防守、底气不足，评估这场仗是否还值得打。"],
+    ["进展 · 消息 · 速度","消息与进展迅速传来，行动加速，一切开始流动。","延误、信息混乱，催促反而拖慢了节奏。"],
+    ["韧性 · 警觉 · 疲惫","历经消耗仍然屹立，最后一程的坚持，保持警觉。","疲惫与多疑，学会求助而不是独自硬撑。"],
+    ["责任 · 负荷 · 承担","责任与负荷过重，扛起了太多，记得分派与喘息。","开始卸下重担，或压力已到临界，必须重新分配。"],
+    ["好奇 · 讯息 · 尝试","好奇心与新鲜消息，跃跃欲试的探索者姿态。","三分钟热度或消息失实，先验证再行动。"],
+    ["冲劲 · 冒险 · 行动","热情行动、快速推进，带着十足的冒险精神。","冲动鲁莽、虎头蛇尾，热情需要方向感。"],
+    ["自信 · 魅力 · 热情","自信温暖、富有感染力，敢于站在光里。","嫉妒、自我怀疑或过度强势，先安顿自己的火。"],
+    ["远见 · 领导 · 蓝图","有远见的领导者，把热情转化为可执行的蓝图。","专断、急躁或好大喜功，权威需要柔化。"]
+  ],
+  cups: [
+    ["情感 · 新生 · 疗愈","情感之泉涌出，新的爱、灵感或疗愈正在开始。","情绪堵塞或付出成空，先把关爱留给自己。"],
+    ["联结 · 吸引 · 对等","相互吸引与对等的关系，真诚的连接正在发生。","关系失衡、误解或分离，需要重新沟通。"],
+    ["友谊 · 庆祝 · 共享","友谊与庆祝，共享喜悦，社群带来温暖的支持。","社交疲惫、圈子里有闲言，选择让你舒服的人。"],
+    ["倦怠 · 忽视 · 不满足","倦怠与不满足，眼前的机会被无意忽略。","重新抬头，愿意接受新的可能性。"],
+    ["失落 · 遗憾 · 回望","失落与遗憾，目光停在打翻的杯子上；转身仍有两只满杯。","走出哀伤，接受与原谅开始发生。"],
+    ["回忆 · 温柔 · 童真","温柔的回忆与旧人旧事，纯真的善意。","困在过去或美化记忆，向前看更重要。"],
+    ["幻想 · 选择 · 迷雾","选择太多，幻想与现实混杂，需要分辨清楚。","迷雾散去，做出取舍，回归务实。"],
+    ["离开 · 追寻 · 放下","主动离开不再滋养你的东西，去寻找更深的意义。","舍不得走或反复回头，离开并不等于失败。"],
+    ["满足 · 心愿 · 享受","心愿达成，满足与享受，值得为自己庆祝。","表面满足而内心空虚，或过度放纵需要节制。"],
+    ["圆满 · 家庭 · 归属","家庭与情感的圆满，长久的幸福与归属感。","理想化的家庭图景出现裂缝，需要真实的沟通。"],
+    ["敏感 · 告白 · 新鲜感","敏感细腻的讯息，情感上的新鲜体验与告白。","情绪化、逃避现实或过度幻想。"],
+    ["浪漫 · 邀约 · 追随","浪漫的邀约与追求，跟随心的方向走。","空口承诺、情绪起伏，浪漫需要落到现实。"],
+    ["共情 · 包容 · 直觉","共情与包容，温柔而深沉的情感智慧。","情绪淹没、过度牺牲或依赖。"],
+    ["成熟 · 稳定 · 守护","情绪成熟与稳定，以智慧稳定守护关系。","情感操控、表面平静之下的压抑。"]
+  ],
+  swords: [
+    ["清晰 · 真相 · 决断","思维清晰、真相大白，一刀切开混乱。","判断模糊、言语伤人，或真相被回避。"],
+    ["僵局 · 两难 · 回避","僵局与两难，暂时回避选择，勉强保持平衡。","僵局松动，被迫面对，摘下眼罩看清。"],
+    ["心痛 · 分离 · 言语伤","心痛与分离，语言造成的伤口，允许自己悲伤。","伤口开始愈合，或痛被压抑需要释放。"],
+    ["休息 · 恢复 · 留白","休息与恢复，暂停思考，给心灵留白。","无法休息、思绪不停，焦虑需要被安放。"],
+    ["争执 · 得失 · 胜负","争执与得失，赢了争论也可能输了关系。","出现和解的可能，或放下无谓的胜负心。"],
+    ["过渡 · 迁移 · 平静","过渡与迁移，离开动荡驶向平静的水域。","旧问题拖尾，转变被打断。"],
+    ["策略 · 隐瞒 · 迂回","策略与隐瞒，避免正面交锋，注意信息不对称。","真相浮现，或良心不安让你想要坦白。"],
+    ["自限 · 困住 · 恐惧","自我设限，感觉被困，束缚其实来自恐惧。","松绑的时刻，开始看见出口。"],
+    ["焦虑 · 失眠 · 放大","焦虑与失眠，思绪在深夜把恐惧放大。","天明渐近，愿意说出担忧就会减轻。"],
+    ["终点 · 谷底 · 收束","一个循环走到尽头，痛到谷底也是终点。","缓慢复原，最坏的时刻已经过去。"],
+    ["观察 · 提问 · 讯息","好奇的观察与学习，敏锐的讯息与提问。","流言、口无遮拦或信息不全。"],
+    ["果断 · 直冲 · 犀利","果断出击、直奔目标，言辞犀利。","急躁好斗、鲁莽冲撞。"],
+    ["清醒 · 独立 · 诚实","清醒独立，以理性与诚实进行沟通。","刻薄、冷漠或过度批判。"],
+    ["理性 · 原则 · 权威","理性权威，以原则与逻辑做出决断。","专断、滥用逻辑或冷酷无情。"]
+  ],
+  pentacles: [
+    ["机会 · 落地 · 实质","实在的机会落地，新的收入、工作或健康起点。","机会落空或投入没有回报，先检查地基。"],
+    ["平衡 · 灵活 · 兼顾","灵活平衡多方，边试边调整，节奏感很好。","分身乏术、失衡，需要排出优先顺序。"],
+    ["协作 · 技艺 · 认可","协作与专业被认可，技艺正在精进。","配合不良、质量打折，需要明确分工。"],
+    ["守成 · 储蓄 · 掌控","守成与储蓄，安全感来自对资源的掌控。","过度紧缩或突然放手，金钱焦虑需要正视。"],
+    ["匮乏 · 孤立 · 求助","匮乏感与孤立，但援助其实就在附近。","走出困境，愿意接受他人的帮助。"],
+    ["给予 · 接受 · 流动","给予与接受的流动，慷慨带来平衡。","不对等的付出，或带着条件的施舍。"],
+    ["耐心 · 耕耘 · 等待","耐心等待收成，长期投入正在累积。","急于求成或投入失焦，重新评估耕耘方式。"],
+    ["专注 · 打磨 · 积累","专注打磨技艺，重复之中积累真正实力。","敷衍、倦怠，或完美主义拖慢了进度。"],
+    ["自足 · 丰盛 · 享受","自给自足的丰盛，享受努力换来的果实。","依赖、虚荣消费，或对成果仍不满足。"],
+    ["富足 · 传承 · 稳固","稳固的富足与传承，家庭与事业的长期保障。","财务纠纷或结构松动，长期规划需要调整。"],
+    ["学习 · 务实 · 起步","踏实学习，新的实务机会与计划正在萌芽。","拖延、纸上谈兵或目标不清。"],
+    ["稳健 · 可靠 · 推进","稳健推进，可靠地把事情做完。","停滞保守或过于固执，谨慎变成了拖延。"],
+    ["经营 · 温暖 · 务实","务实又温暖，善于经营生活与手中资源。","过度操劳、物质焦虑或忽视自己。"],
+    ["掌控 · 富足 · 长期","富足与掌控，长期经营的成功者。","贪婪、固执或只看重利益。"]
+  ]
+};
+
+/* ============ 构建 78 张牌 ============ */
+const deck = [];
+MAJOR_DATA.forEach(([cn,en,num,sym,kw,up,rev])=>{
+  deck.push({arcana:"major",suit:null,suitCn:"大阿卡纳",rank:num,cn,en,num,sym,color:"#8a6a2f",kw,up,rev});
+});
+SUITS.forEach(s=>{
+  MINOR[s.id].forEach((row,i)=>{
+    const r=RANKS[i];
+    deck.push({
+      arcana:"minor",suit:s.id,suitCn:s.cn,rank:r.cn,
+      cn:s.cn+r.cn,en:r.en+" of "+s.en,num:r.num,
+      sym:s.sym,color:s.color,kw:row[0],up:row[1],rev:row[2]
+    });
+  });
+});
+
+/* ============ 牌阵 ============ */
+const SPREADS = [
+  {id:"one",   name:"单张指引", desc:"一张牌，给当下最需要的提醒",       pos:["核心指引"]},
+  {id:"three", name:"时间之流", desc:"过去 · 现在 · 未来，看清走向",    pos:["过去","现在","未来"]},
+  {id:"love",  name:"关系之镜", desc:"你的心 · 对方的心 · 关系走向",     pos:["你的心","对方的心","关系走向"]},
+  {id:"cross", name:"五张十字", desc:"现状 · 阻碍 · 根源 · 建议 · 结果", pos:["现状","阻碍","根源","建议","结果"]},
+  {id:"yesno", name:"是 / 否",  desc:"一张牌给出倾向性回答",             pos:["回答"]}
+];
+
+
+/* =======================================================================
+   声音引擎 · 玲珑破碎（Web Audio 合成，无外部音频文件）
+   ======================================================================= */
+const Sound = (function () {
+  const KEY = "tarot-sound";
+  let ctx = null, master = null, dry = null, revIn = null, noise = null;
+  let enabled = true;
+  try { enabled = (localStorage.getItem(KEY) || "on") !== "off"; } catch (e) {}
+  let played = 0;
+
+  function ready() { return !!ctx && enabled; }
+
+  function makeIR(seconds, decay) {
+    const len = Math.floor(ctx.sampleRate * seconds);
+    const buf = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) {
+      const d = buf.getChannelData(c);
+      for (let i = 0; i < len; i++) {
+        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+      }
+    }
+    return buf;
+  }
+
+  function init() {
+    if (ctx) return true;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = enabled ? 0.5 : 0;
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -20; comp.knee.value = 20; comp.ratio.value = 3;
+    comp.attack.value = 0.004; comp.release.value = 0.25;
+    master.connect(comp); comp.connect(ctx.destination);
+
+    dry = ctx.createGain(); dry.gain.value = 1; dry.connect(master);
+
+    const conv = ctx.createConvolver();
+    conv.buffer = makeIR(2.4, 2.4);
+    revIn = ctx.createGain(); revIn.gain.value = 1;
+    const wet = ctx.createGain(); wet.gain.value = 0.55;
+    revIn.connect(conv); conv.connect(wet); wet.connect(master);
+
+    const nlen = Math.floor(ctx.sampleRate * 1.5);
+    noise = ctx.createBuffer(1, nlen, ctx.sampleRate);
+    const nd = noise.getChannelData(0);
+    for (let i = 0; i < nlen; i++) nd[i] = Math.random() * 2 - 1;
+    return true;
+  }
+
+  function bus(panValue) {
+    const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    if (pan) {
+      pan.pan.value = panValue || 0;
+      pan.connect(dry); pan.connect(revIn);
+      return pan;
+    }
+    const g = ctx.createGain();
+    g.connect(dry); g.connect(revIn);
+    return g;
+  }
+
+  /* 钟体：FM 非谐波 + 高频玻璃泛音 */
+  function bell(freq, when, o) {
+    if (!ready()) return;
+    o = o || {};
+    const t = ctx.currentTime + (when || 0);
+    const dur = o.dur || 1.8;
+    const out = ctx.createGain();
+    out.gain.value = o.gain == null ? 0.12 : o.gain;
+    out.connect(bus(o.pan || 0));
+
+    const car = ctx.createOscillator();
+    car.type = "sine"; car.frequency.value = freq;
+    const mod = ctx.createOscillator();
+    mod.type = "sine"; mod.frequency.value = freq * (o.ratio || 2.76);
+    const mg = ctx.createGain();
+    mg.gain.setValueAtTime(freq * (o.index || 1.1), t);
+    mg.gain.exponentialRampToValueAtTime(0.02, t + dur * 0.55);
+    mod.connect(mg); mg.connect(car.frequency);
+
+    const a = ctx.createGain();
+    a.gain.setValueAtTime(0.0001, t);
+    a.gain.exponentialRampToValueAtTime(1, t + 0.008);
+    a.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    car.connect(a); a.connect(out);
+
+    const p2 = ctx.createOscillator();
+    p2.type = "sine"; p2.frequency.value = freq * 4.11;
+    const a2 = ctx.createGain();
+    a2.gain.setValueAtTime(0.0001, t);
+    a2.gain.exponentialRampToValueAtTime(0.16, t + 0.004);
+    a2.gain.exponentialRampToValueAtTime(0.0001, t + dur * 0.32);
+    p2.connect(a2); a2.connect(out);
+
+    car.start(t); mod.start(t); p2.start(t);
+    car.stop(t + dur + 0.1); mod.stop(t + dur + 0.1); p2.stop(t + dur + 0.1);
+  }
+
+  /* 气声：带通噪声扫频 */
+  function air(dur, gain, f0, f1, when) {
+    if (!ready()) return;
+    const t = ctx.currentTime + (when || 0);
+    const src = ctx.createBufferSource(); src.buffer = noise;
+    src.playbackRate.value = 0.9 + Math.random() * 0.2;
+    const bp = ctx.createBiquadFilter(); bp.type = "bandpass";
+    bp.Q.value = 0.9;
+    bp.frequency.setValueAtTime(f0 || 500, t);
+    bp.frequency.exponentialRampToValueAtTime(f1 || 2400, t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain || 0.05, t + dur * 0.35);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    const pan = bus(Math.random() * 0.6 - 0.3);
+    src.connect(bp); bp.connect(g); g.connect(pan);
+    src.start(t); src.stop(t + dur + 0.05);
+  }
+
+  /* 低频落位 */
+  function thump(when, gain) {
+    if (!ready()) return;
+    const t = ctx.currentTime + (when || 0);
+    const o = ctx.createOscillator(); o.type = "sine";
+    o.frequency.setValueAtTime(130, t);
+    o.frequency.exponentialRampToValueAtTime(52, t + 0.28);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain || 0.12, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.34);
+    o.connect(g); g.connect(bus(0));
+    o.start(t); o.stop(t + 0.36);
+  }
+
+  /* 破碎：高频玻璃颗粒群 + 下落泛音 */
+  function shatter(when, opts) {
+    if (!ready()) return;
+    opts = opts || {};
+    const t0 = ctx.currentTime + (when || 0);
+    const n = opts.count || 18;
+    for (let i = 0; i < n; i++) {
+      const t = t0 + Math.pow(Math.random(), 1.7) * (opts.spread || 0.45);
+      const src = ctx.createBufferSource(); src.buffer = noise;
+      src.playbackRate.value = 0.8 + Math.random() * 0.8;
+      const bp = ctx.createBiquadFilter(); bp.type = "bandpass";
+      bp.frequency.value = 3200 + Math.random() * 6200;
+      bp.Q.value = 5 + Math.random() * 12;
+      const g = ctx.createGain();
+      const d = 0.03 + Math.random() * 0.08;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.1 + Math.random() * 0.12, t + 0.002);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      const pan = bus(Math.random() * 1.7 - 0.85);
+      src.connect(bp); bp.connect(g); g.connect(pan);
+      src.start(t); src.stop(t + d + 0.03);
+    }
+    [2637, 3136, 3951].forEach((f, i) => {
+      bell(f, (opts.spread || 0.45) * 0.35 + i * 0.03, { dur: 0.9, gain: 0.05, ratio: 3.2, index: 0.5, pan: (i - 1) * 0.4 });
+    });
+    air(0.55, 0.05, 5200, 1400, (opts.spread || 0.45) * 0.2);
+    thump(0, 0.05);
+  }
+
+  const CHORDS = {
+    star: [1568, 2093, 2637, 3136],
+    moon: [880, 1108, 1318],
+    sun: [523, 659, 784, 1046],
+    death: [196, 233, 294],
+    wheel: [392, 523, 784],
+    priestess: [1046, 1318, 1568],
+    magician: [659, 988, 1318],
+    lovers: [523, 659, 880]
+  };
+
+  function play(name, arg) {
+    if (!enabled) return;
+    if (!init()) return;
+    if (ctx.state === "suspended") ctx.resume();
+    played++;
+    switch (name) {
+      case "ui":
+        bell(1800, 0, { dur: 0.32, gain: 0.03, ratio: 3.4, index: 0.4 });
+        break;
+      case "tick":
+        bell(2400 + Math.random() * 600, 0, { dur: 0.45, gain: 0.028, ratio: 3.6, index: 0.5, pan: Math.random() * 0.6 - 0.3 });
+        break;
+      case "swell":
+        air(1.1, 0.05, 260, 1500);
+        bell(392, 0.05, { dur: 2.2, gain: 0.05 });
+        break;
+      case "shuffle":
+        air(1.0, 0.05, 400, 2200);
+        [0, 1, 2, 3].forEach(i => bell(196 * Math.pow(1.18, i), i * 0.09, { dur: 1.0, gain: 0.028, ratio: 1.5, index: 0.7, pan: (i - 1.5) * 0.2 }));
+        break;
+      case "fan":
+        [880, 1046, 1318, 1568, 2093].forEach((f, i) => bell(f, i * 0.065, { dur: 1.7, gain: 0.045, pan: (i - 2) * 0.22 }));
+        air(1.3, 0.045, 800, 3200);
+        break;
+      case "pick":
+        bell(1046, 0, { dur: 1.5, gain: 0.09 });
+        bell(1568, 0.06, { dur: 1.3, gain: 0.06, pan: 0.15 });
+        break;
+      case "whoosh":
+        air(0.5, 0.05, 500, 2600);
+        break;
+      case "land":
+        thump(0, 0.1);
+        bell(1046, 0.02, { dur: 1.1, gain: 0.05, ratio: 3.0 });
+        bell(1568, 0.07, { dur: 0.9, gain: 0.035, pan: 0.2 });
+        break;
+      case "charge":
+        [1318, 1568, 2093, 2637].forEach((f, i) => bell(f, i * 0.1, { dur: 1.2, gain: 0.03, pan: (i - 1.5) * 0.3 }));
+        air(0.6, 0.03, 1200, 5200);
+        break;
+      case "shatter":
+        shatter(0, { count: 20, spread: 0.5 });
+        break;
+      case "reveal": {
+        const notes = CHORDS[arg] || [880, 1174, 1568];
+        const dark = arg === "death";
+        notes.forEach((f, i) => bell(f, i * 0.07, {
+          dur: dark ? 2.8 : 2.2, gain: dark ? 0.05 : 0.06,
+          ratio: dark ? 1.5 : 2.76, index: dark ? 0.7 : 1.0,
+          pan: (i - (notes.length - 1) / 2) * 0.25
+        }));
+        break;
+      }
+      case "settle":
+        [262, 392, 523].forEach((f, i) => bell(f, i * 0.05, { dur: 2.6, gain: 0.045, ratio: 1.5, index: 0.6 }));
+        bell(2093, 0.12, { dur: 1.6, gain: 0.025 });
+        break;
+    }
+  }
+
+  function unlock() {
+    if (!init()) return false;
+    if (ctx.state === "suspended") ctx.resume();
+    return true;
+  }
+  function setEnabled(v) {
+    enabled = !!v;
+    try { localStorage.setItem(KEY, enabled ? "on" : "off"); } catch (e) {}
+    if (master) master.gain.setTargetAtTime(enabled ? 0.5 : 0, ctx.currentTime, 0.06);
+    return enabled;
+  }
+  function stats() {
+    return { enabled: enabled, ctx: ctx ? ctx.state : "none", played: played };
+  }
+  return {
+    play: play, unlock: unlock, setEnabled: setEnabled, stats: stats,
+    isEnabled: function () { return enabled; },
+    toggle: function () { return setEnabled(!enabled); }
+  };
+})();
+
+/* =======================================================================
+   月影塔罗 · 交互层（数据与牌阵定义在上方，未改动）
+   ======================================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pad2 = n => String(n).padStart(2, "0");
+const fmtTime = t => { const d = new Date(t); return (d.getMonth() + 1) + "月" + d.getDate() + "日 " + pad2(d.getHours()) + ":" + pad2(d.getMinutes()); };
+const ROMAN = ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ"];
+const mMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let reduceMotion = mMotion.matches;
+const canHover = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+
+/* 主题气场（基于已有牌名，不新增数据字段） */
+const THEME = {
+  "星星": "star", "月亮": "moon", "太阳": "sun", "死神": "death",
+  "命运之轮": "wheel", "女祭司": "priestess", "魔术师": "magician", "恋人": "lovers"
+};
+
+const state = { spread: SPREADS[1], picks: [], question: "", phase: "idle", scene: "home", fan: [], flying: false };
+let lastTick = 0;
+
+const stageEl = $("#stage"), deckEl = $("#deck"), fanEl = $("#fan");
+const readingEl = $("#reading"), histEl = $("#hist"), hintEl = $("#hint");
+const drawBtn = $("#drawBtn"), resetBtn = $("#resetBtn"), spreadsEl = $("#spreads");
+
+/* =======================================================================
+   1. 场景
+   ======================================================================= */
+const scenes = { home: $("#scene-home"), ritual: $("#scene-ritual") };
+let sceneBusy = false;
+function goScene(name) {
+  if (name === state.scene || sceneBusy) return;
+  Sound.play(name === "home" ? "ui" : "swell");
+  const out = scenes[state.scene], inn = scenes[name];
+  $$(".nav-btn[data-scene]").forEach(b => b.classList.toggle("on", b.dataset.scene === name));
+  state.scene = name;
+  if (reduceMotion) { out.classList.remove("active"); inn.classList.add("active"); window.scrollTo(0, 0); return; }
+  sceneBusy = true;
+  out.classList.add("leaving");
+  setTimeout(() => {
+    out.classList.remove("active", "leaving");
+    inn.classList.add("active");
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    sceneBusy = false;
+  }, 380);
+}
+
+/* =======================================================================
+   2. 图形生成
+   ======================================================================= */
+function rng(seed) {
+  let t = seed >>> 0;
+  return () => {
+    t = (t + 0x6D2B79F5) >>> 0;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hash(str) {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h >>> 0;
+}
+
+/* 牌背星盘：外环 / 罗盘 / 内层月相 / 中心脉冲 */
+function backSVG(animated) {
+  let ticks = "", dots = "";
+  for (let i = 0; i < 48; i++) {
+    const a = (i * Math.PI) / 24, r1 = 51, r2 = i % 4 === 0 ? 56 : 53.5;
+    ticks += '<line x1="' + (60 + Math.cos(a) * r1).toFixed(1) + '" y1="' + (103 + Math.sin(a) * r1).toFixed(1) +
+      '" x2="' + (60 + Math.cos(a) * r2).toFixed(1) + '" y2="' + (103 + Math.sin(a) * r2).toFixed(1) + '"/>';
+  }
+  for (let i = 0; i < 12; i++) {
+    const a = (i * Math.PI) / 6;
+    dots += '<circle cx="' + (60 + Math.cos(a) * 45).toFixed(1) + '" cy="' + (103 + Math.sin(a) * 45).toFixed(1) +
+      '" r="1.2" fill="currentColor" stroke="none" opacity=".5"/>';
+  }
+  return '<svg class="astro' + (animated ? " anim" : "") + '" viewBox="0 0 120 206" fill="none" stroke="currentColor" aria-hidden="true">' +
+    '<rect x="4" y="4" width="112" height="198" rx="2" stroke-opacity=".5" stroke-width=".7"/>' +
+    '<rect x="7.5" y="7.5" width="105" height="191" rx="1.5" stroke-opacity=".18" stroke-width=".45"/>' +
+    '<g class="ring o" opacity=".62"><circle cx="60" cy="103" r="58" stroke-opacity=".25" stroke-width=".5"/>' +
+      '<circle cx="60" cy="103" r="51" stroke-opacity=".5" stroke-width=".55" stroke-dasharray="1 4"/>' +
+      '<g opacity=".55">' + ticks + '</g>' + dots + '</g>' +
+    '<g class="ring m" opacity=".8"><circle cx="60" cy="103" r="37" stroke-opacity=".4" stroke-width=".5"/>' +
+      '<path d="M60 56 L64.6 97.8 L60 103 L55.4 97.8 Z" fill="currentColor" fill-opacity=".3" stroke-opacity=".7" stroke-width=".45"/>' +
+      '<path d="M60 150 L55.4 108.2 L60 103 L64.6 108.2 Z" fill="currentColor" fill-opacity=".16" stroke-opacity=".45" stroke-width=".45"/>' +
+      '<path d="M13 103 L54.2 98.4 L60 103 L54.2 107.6 Z" fill="currentColor" fill-opacity=".16" stroke-opacity=".45" stroke-width=".45"/>' +
+      '<path d="M107 103 L65.8 107.6 L60 103 L65.8 98.4 Z" fill="currentColor" fill-opacity=".16" stroke-opacity=".45" stroke-width=".45"/>' +
+      '<circle cx="60" cy="103" r="26" stroke-opacity=".28" stroke-width=".45"/></g>' +
+    '<g class="ring i" opacity=".9"><circle cx="60" cy="103" r="17" stroke-opacity=".35" stroke-width=".45"/>' +
+      '<path d="M63 92 a7 7 0 1 0 .2 14 5.6 5.6 0 1 1-.2-14z" fill="currentColor" fill-opacity=".6" stroke="none"/>' +
+      '<circle cx="60" cy="72" r="1.6" fill="currentColor" stroke="none" opacity=".6"/>' +
+      '<circle cx="60" cy="134" r="1.6" fill="currentColor" stroke="none" opacity=".6"/>' +
+      '<circle cx="29" cy="103" r="1.2" fill="currentColor" stroke="none" opacity=".5"/>' +
+      '<circle cx="91" cy="103" r="1.2" fill="currentColor" stroke="none" opacity=".5"/></g>' +
+    '<g class="core"><circle cx="60" cy="103" r="13" fill="url(#coreGrad)" stroke="none" opacity=".9"/>' +
+      '<circle cx="60" cy="103" r="2.4" fill="#fff6dc" stroke="none"/></g>' +
+    '<path d="M60 23 a6 6 0 1 0 .2 12 4.8 4.8 0 1 1-.2-12z" fill="currentColor" fill-opacity=".5" stroke="none"/>' +
+    '<path d="M60 179 l1.4 -4.4 4.4 -1.4 -4.4 -1.4 -1.4 -4.4 -1.4 4.4 -4.4 1.4 4.4 1.4 z" fill="currentColor" fill-opacity=".45" stroke="none"/>' +
+    '<path d="M16 103 l.9 -2.8 2.8 -.9 -2.8 -.9 -.9 -2.8 -.9 2.8 -2.8 .9 2.8 .9 z" fill="currentColor" fill-opacity=".3" stroke="none"/>' +
+    '<path d="M104 103 l.9 -2.8 2.8 -.9 -2.8 -.9 -.9 -2.8 -.9 2.8 -2.8 .9 2.8 .9 z" fill="currentColor" fill-opacity=".3" stroke="none"/>' +
+  "</svg>";
+}
+
+/* 牌面星图：每张牌唯一 */
+function artSVG(card) {
+  const r = rng(hash(card.en + card.cn));
+  const cx = 50, cy = 50, N = 6, pts = [];
+  for (let i = 0; i < N; i++) {
+    const a = (i / N) * Math.PI * 2 + r() * .55, d = 17 + r() * 23;
+    pts.push([cx + Math.cos(a) * d, cy + Math.sin(a) * d * .94]);
+  }
+  let dots = "", rays = "";
+  pts.forEach(p => {
+    dots += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (.7 + r() * .9).toFixed(2) +
+      '" fill="currentColor" stroke="none" opacity="' + (.5 + r() * .45).toFixed(2) + '"/>';
+  });
+  for (let i = 0; i < 16; i++) {
+    const a = (i * Math.PI) / 8, r1 = 33, r2 = i % 2 ? 37 : 42;
+    rays += '<line x1="' + (cx + Math.cos(a) * r1).toFixed(1) + '" y1="' + (cy + Math.sin(a) * r1).toFixed(1) +
+      '" x2="' + (cx + Math.cos(a) * r2).toFixed(1) + '" y2="' + (cy + Math.sin(a) * r2).toFixed(1) + '"/>';
+  }
+  return '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width=".72" aria-hidden="true">' +
+    '<circle cx="50" cy="50" r="45" opacity=".22"/><circle cx="50" cy="50" r="38" opacity=".62"/>' +
+    '<circle cx="50" cy="50" r="30" stroke-dasharray="1 4" opacity=".3"/>' +
+    '<g opacity=".45">' + rays + '</g>' +
+    '<polyline points="' + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ") + '" opacity=".55"/>' +
+    dots +
+    '<path transform="translate(50,50) scale(.8)" d="M0 -7 L1.6 -1.6 L7 0 L1.6 1.6 L0 7 L-1.6 1.6 L-7 0 L-1.6 -1.6 Z" fill="currentColor" stroke="none" opacity=".5"/>' +
+    '<text x="50" y="50" text-anchor="middle" dominant-baseline="central" stroke="none" fill="currentColor" font-size="19"' +
+    ' font-family="\'Segoe UI Symbol\',\'Apple Symbols\',serif" opacity=".95">' + card.sym + "</text></svg>";
+}
+
+function frontHTML(p) {
+  const c = p.card;
+  return '<div class="face front' + (p.rev ? " rev" : "") + '" style="--accent:' + c.color + '">' +
+    '<span class="fr1"></span><span class="fr2"></span>' +
+    '<span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>' +
+    '<div class="num">' + c.num + "</div>" +
+    '<div class="art">' + artSVG(c) + "</div>" +
+    '<div class="plate"><span class="div"></span><div class="en">' + c.en + '</div><div class="cn">' + c.cn +
+      '</div><div class="ori">逆 位</div></div>' +
+    '<div class="sheen"></div><div class="veil"></div></div>';
+}
+
+function dustHTML() {
+  let out = "";
+  for (let i = 0; i < 9; i++) {
+    const x = 6 + Math.random() * 88, y = 4 + Math.random() * 92;
+    const s = (1 + Math.random() * 1.8).toFixed(1);
+    const t = (5 + Math.random() * 5).toFixed(1);
+    const dx = (Math.random() * 26 - 13).toFixed(0), dy = (-8 - Math.random() * 20).toFixed(0);
+    out += '<b style="--x:' + x.toFixed(1) + '%;--y:' + y.toFixed(1) + '%;--s:' + s + "px;--t:" + t + "s;--dl:-" +
+      (Math.random() * 6).toFixed(1) + "s;--dx:" + dx + "px;--dy:" + dy + 'px"></b>';
+  }
+  return out;
+}
+
+function slotHTML(i) {
+  const p = state.picks[i];
+  return '<div class="refract"></div>' +
+    '<div class="float">' +
+      '<div class="card" role="button" tabindex="0" aria-label="' + state.spread.pos[i] + '，点击翻牌">' +
+        '<div class="aura"></div>' +
+        '<div class="inner">' +
+          '<div class="face back">' + backSVG(true) + "</div>" + frontHTML(p) +
+        "</div>" +
+        '<div class="rim"></div><div class="rim-hot"></div>' +
+        '<div class="dust">' + dustHTML() + "</div>" +
+        '<div class="converge"></div><div class="wave"></div><div class="blade"></div><div class="rune"></div>' +
+      "</div>" +
+    "</div>" +
+    '<div class="shadow"></div>' +
+    '<div class="slot-label">' + state.spread.pos[i] + "</div>";
+}
+
+/* =======================================================================
+   3. 牌阵 / 牌堆
+   ======================================================================= */
+function renderSpreads() {
+  spreadsEl.innerHTML = SPREADS.map((s, i) =>
+    '<button class="spread' + (s === state.spread ? " on" : "") + '" data-i="' + i + '" aria-pressed="' + (s === state.spread) + '">' +
+      '<span class="idx">' + ROMAN[i] + '</span><b>' + s.name + '</b><span class="sdesc">' + s.desc + "</span></button>"
+  ).join("");
+}
+spreadsEl.addEventListener("click", e => {
+  const b = e.target.closest(".spread");
+  if (!b || state.phase === "shuffle" || state.phase === "choosing" || state.phase === "picking") return;
+  const s = SPREADS[+b.dataset.i];
+  if (!s || s === state.spread) return;
+  state.spread = s;
+  renderSpreads();
+  hintEl.textContent = "已选择「" + s.name + "」：" + s.desc + "。";
+});
+
+function buildDeck() {
+  deckEl.innerHTML = "";
+  for (let i = 0; i < 7; i++) {
+    const d = document.createElement("i");
+    d.style.setProperty("--bx", ((i - 3) * 0.9).toFixed(2) + "px");
+    d.style.setProperty("--by", ((i - 3) * -0.85).toFixed(2) + "px");
+    d.style.setProperty("--br", ((i - 3) * 1.15).toFixed(2) + "deg");
+    d.style.setProperty("--sd", (i * 38) + "ms");
+    d.innerHTML = backSVG(false);
+    deckEl.appendChild(d);
+  }
+}
+
+/* =======================================================================
+   4. 洗牌 → 牌扇
+   ======================================================================= */
+function shuffleArr(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function syncControls() {
+  const blocked = state.phase === "shuffle" || state.phase === "choosing" || state.phase === "picking" || state.flying;
+  drawBtn.disabled = blocked;
+  drawBtn.textContent = blocked ? "占卜进行中" : (state.phase === "done" ? "再抽一次" : "洗牌 · 展开牌扇");
+  resetBtn.disabled = state.phase === "shuffle" || state.flying;
+}
+
+async function startDraw() {
+  if (state.phase === "shuffle" || state.phase === "choosing" || state.phase === "picking" || state.flying) return;
+
+  state.phase = "shuffle";
+  state.picks = [];
+  state.question = $("#q").value.trim();
+  syncControls();
+  readingEl.hidden = true; readingEl.innerHTML = "";
+  stageEl.innerHTML = ""; fanEl.innerHTML = ""; fanEl.classList.remove("open", "closing", "empty");
+  deckEl.classList.remove("done");
+  deckEl.classList.add("shuffling");
+  hintEl.textContent = "洗牌中 · 把注意力放回你的问题上";
+
+  await sleep(reduceMotion ? 80 : 1250);
+  deckEl.classList.remove("shuffling");
+  deckEl.classList.add("done");
+
+  /* 原有随机逻辑：78 张洗牌，牌扇取前 N 张，各 50% 逆位 */
+  const pool = shuffleArr(deck);
+  const n = window.innerWidth < 640 ? 13 : 21;
+  state.fan = pool.slice(0, n).map(c => ({ card: c, rev: Math.random() < 0.5 }));
+
+  fanEl.innerHTML = state.fan.map((f, i) =>
+    '<button class="fcard" data-k="' + i + '" aria-label="第 ' + (i + 1) + ' 张牌"><div class="fback">' +
+      backSVG(false) + "</div></button>"
+  ).join("");
+
+  const mid = (n - 1) / 2;
+  const step = n > 15 ? 3.1 : 4.4;
+  $$(".fcard", fanEl).forEach((el, i) => {
+    el.style.setProperty("--k", i);
+    el.style.setProperty("--rot", ((i - mid) * step).toFixed(2) + "deg");
+    el.style.setProperty("--ty", (Math.pow(Math.abs(i - mid), 1.35) * 2.6).toFixed(1) + "px");
+    el.style.zIndex = 100 - Math.abs(Math.round(i - mid));
+    el.addEventListener("click", () => pickFan(i));
+    el.addEventListener("pointerenter", () => {
+      if (state.phase !== "choosing") return;
+      el.classList.add("hot");
+      const now = performance.now();
+      if (now - lastTick > 140) { lastTick = now; Sound.play("tick"); }
+    });
+    el.addEventListener("pointerleave", () => el.classList.remove("hot"));
+  });
+
+  state.phase = "choosing";
+  fanEl.classList.remove("empty");
+  fanEl.classList.add("open");
+  Sound.play("fan");
+  hintEl.textContent = "牌扇已展开 · 亲手挑 " + state.spread.pos.length + " 张（点击牌背）";
+  syncControls();
+}
+
+async function pickFan(k) {
+  if (state.phase !== "choosing" || state.flying) return;
+  const f = state.fan[k];
+  const fcEl = fanEl.querySelector('.fcard[data-k="' + k + '"]');
+  if (!f || !fcEl || fcEl.classList.contains("gone")) return;
+
+  const need = state.spread.pos.length;
+  if (state.picks.length >= need) return;
+
+  state.flying = true;
+  Sound.play("pick");
+  fcEl.classList.add("gone");
+  fcEl.style.pointerEvents = "none";
+  fcEl.style.opacity = "0";
+
+  const idx = state.picks.length;
+  state.picks.push({ card: f.card, rev: f.rev, flipped: false });
+
+  const slot = document.createElement("div");
+  slot.className = "slot";
+  slot.dataset.i = idx;
+  slot.style.setProperty("--fd", (-idx * 1.7) + "s");
+  slot.innerHTML = slotHTML(idx);
+  stageEl.appendChild(slot);
+
+  await sleep(20);
+  await flyCard(fcEl, slot);
+
+  slot.classList.add("live", "landed");
+  Sound.play("land");
+  setTimeout(() => slot.classList.remove("landed"), 1100);
+  state.flying = false;
+  bindSlot(idx);
+
+  if (state.picks.length >= need) {
+    state.phase = "picking";
+    fanEl.classList.add("closing");
+    setTimeout(() => {
+      fanEl.classList.remove("open", "closing");
+      fanEl.classList.add("empty");
+      fanEl.innerHTML = "";
+    }, 600);
+    hintEl.textContent = "牌已落位 · 逐张点击牌背翻开，全部翻开后给出解读";
+  } else {
+    state.phase = "choosing";
+    hintEl.textContent = "已选 " + state.picks.length + " / " + need + " 张 · 继续挑选";
+  }
+  syncControls();
+}
+
+function bindSlot(i) {
+  const slot = stageEl.querySelector('.slot[data-i="' + i + '"]');
+  if (!slot) return;
+  const cardEl = slot.querySelector(".card");
+  cardEl.addEventListener("click", () => flipCard(i));
+  cardEl.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flipCard(i); }
+  });
+  attachHover(slot);
+}
+
+/* =======================================================================
+   5. 飞牌 + 星屑尾迹
+   ======================================================================= */
+function flyCard(fromEl, slot) {
+  return new Promise(resolve => {
+    const a = fromEl.getBoundingClientRect();
+    const b = slot.getBoundingClientRect();
+    const fly = document.createElement("div");
+    fly.className = "flyer";
+    fly.style.cssText = "left:" + a.left + "px;top:" + a.top + "px;width:" + a.width + "px;height:" + a.height + "px";
+    fly.innerHTML = backSVG(false);
+    document.body.appendChild(fly);
+
+    if (reduceMotion) {
+      fly.remove();
+      resolve();
+      return;
+    }
+
+    const dx = (b.left + b.width / 2) - (a.left + a.width / 2);
+    const dy = (b.top + b.height / 2) - (a.top + a.height / 2);
+    const sc = b.width / a.width;
+
+    const anim = fly.animate([
+      { transform: "translate(0,0) rotate(0deg) scale(1)", opacity: 1 },
+      { transform: "translate(" + (dx * .45).toFixed(1) + "px," + (dy * .45 - 46).toFixed(1) + "px) rotate(-7deg) scale(1.06)", opacity: 1, offset: .45 },
+      { transform: "translate(" + dx.toFixed(1) + "px," + dy.toFixed(1) + "px) rotate(0deg) scale(" + sc.toFixed(3) + ")", opacity: 1 }
+    ], { duration: 860, easing: "cubic-bezier(.22,.72,.18,1)", fill: "forwards" });
+
+    let alive = true;
+    (function trail() {
+      if (!alive) return;
+      const r = fly.getBoundingClientRect();
+      const sp = document.createElement("i");
+      sp.className = "spark";
+      sp.style.left = (r.left + r.width * (.3 + Math.random() * .4)) + "px";
+      sp.style.top = (r.top + r.height * (.25 + Math.random() * .5)) + "px";
+      sp.style.setProperty("--sx", (Math.random() * 26 - 13).toFixed(0) + "px");
+      sp.style.setProperty("--sy", (-10 - Math.random() * 26).toFixed(0) + "px");
+      document.body.appendChild(sp);
+      sp.addEventListener("animationend", () => sp.remove());
+      setTimeout(trail, 64);
+    })();
+
+    anim.onfinish = () => { alive = false; fly.remove(); resolve(); };
+  });
+}
+
+/* =======================================================================
+   6. 悬浮 / 倾斜 / 悬停响应
+   ======================================================================= */
+function attachHover(slot) {
+  const card = slot.querySelector(".card");
+  if (!card) return;
+  let raf = 0, last = null;
+
+  slot.addEventListener("pointerenter", () => { if (state.phase === "picking" || state.phase === "done") slot.classList.add("hot"); });
+  slot.addEventListener("pointerleave", () => {
+    slot.classList.remove("hot");
+    card.style.setProperty("--rx", "0deg");
+    card.style.setProperty("--ry", "0deg");
+  });
+
+  if (!canHover || reduceMotion) return;
+  slot.addEventListener("pointermove", e => {
+    if (state.phase !== "picking" && state.phase !== "done") return;
+    last = e;
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      const r = card.getBoundingClientRect();
+      const nx = (last.clientX - r.left) / r.width - .5;
+      const ny = (last.clientY - r.top) / r.height - .5;
+      card.style.setProperty("--ry", (nx * 13).toFixed(2) + "deg");
+      card.style.setProperty("--rx", (-ny * 9).toFixed(2) + "deg");
+    });
+  });
+}
+
+/* =======================================================================
+   7. 翻牌仪式
+   ======================================================================= */
+const busyFlip = new Set();
+
+function flipCard(i) {
+  const p = state.picks[i];
+  if (!p || p.flipped || state.phase !== "picking" || busyFlip.has(i)) return;
+  const slot = stageEl.querySelector('.slot[data-i="' + i + '"]');
+  if (!slot) return;
+  busyFlip.add(i);
+  p.flipped = true;
+  slot.classList.remove("hot");
+  slot.style.pointerEvents = "none";
+
+  const theme = THEME[p.card.cn];
+  const T = reduceMotion ? { charge: 0, side: 60, done: 90 } : { charge: 620, side: 400, done: 1020 };
+
+  slot.classList.add("charging");
+  Sound.play("charge");
+
+  setTimeout(() => {
+    slot.classList.add("flipped", "flip-go");
+    setTimeout(() => {
+      slot.classList.add("blade-on");
+      Sound.play("shatter");
+      burstSparks(slot, 10);
+      setTimeout(() => {
+        slot.classList.remove("flip-go");
+        slot.classList.add("revealed");
+        if (theme) slot.classList.add("theme-" + theme);
+        Sound.play("reveal", theme || "");
+        busyFlip.delete(i);
+        if (state.picks.length && state.picks.every(x => x.flipped)) showReading();
+      }, T.done);
+    }, T.side);
+  }, T.charge);
+}
+
+function burstSparks(slot, n) {
+  if (reduceMotion) return;
+  const r = slot.getBoundingClientRect();
+  for (let k = 0; k < n; k++) {
+    const sp = document.createElement("i");
+    sp.className = "spark";
+    sp.style.left = (r.left + r.width * (.5 + (Math.random() - .5) * .6)) + "px";
+    sp.style.top = (r.top + r.height * (.5 + (Math.random() - .5) * .5)) + "px";
+    sp.style.setProperty("--sx", (Math.random() * 90 - 45).toFixed(0) + "px");
+    sp.style.setProperty("--sy", (Math.random() * 70 - 55).toFixed(0) + "px");
+    document.body.appendChild(sp);
+    sp.addEventListener("animationend", () => sp.remove());
+  }
+}
+
+/* =======================================================================
+   8. 解读（沿用原逻辑）
+   ======================================================================= */
+function synth(picks, sp) {
+  const n = picks.length;
+  const revN = picks.filter(p => p.rev).length;
+  const upN = n - revN;
+  const majors = picks.filter(p => p.card.arcana === "major").length;
+  const cnt = {};
+  picks.forEach(p => { if (p.card.suit) cnt[p.card.suit] = (cnt[p.card.suit] || 0) + 1; });
+  const out = [];
+
+  if (sp.id === "yesno") {
+    const p = picks[0];
+    out.push(p.rev
+      ? "逆位不等于坏事，它更像是「现在还不是时候」，或「你还差一步没准备好」。如果这件事可以等，等条件变了再问一次会更有意义。"
+      : "正位给出的倾向是肯定的，但牌面只说明趋势，不替你做事。接下来把注意力放在具体的那一步上，结果会更稳。");
+    out.push("如果这个答案和你心里期待的不一样，那份「不太舒服」通常才是这次抽牌真正想让你看见的部分。");
+    return out;
+  }
+  if (revN === 0) out.push("整组牌都是正位，能量流向顺畅。你心里那个方向大体是对的，可以更相信自己的判断，把力气放在执行而不是反复确认上。");
+  else if (upN === 0) out.push("整组牌都是逆位，这不是坏消息，更像一次「向内收」的提醒：外部条件还没成熟，或者真正卡住你的地方在心里。先把情绪和需求看清楚，再谈推进。");
+  else if (revN > upN) out.push("逆位偏多，阻力更多来自内部——疲惫、犹豫、或者还没说出口的需求。现实条件未必差，先把自己理顺，事情会跟着松动。");
+  else out.push("正逆位交错，事情在一半顺畅、一半拧巴之间推进。分辨清楚哪些部分该主动推、哪些部分该等，是这次占卜最实际的收获。");
+
+  if (n === 1) {
+    const c = picks[0];
+    out.push("这张「" + c.card.cn + "」是此刻最直接的提醒，关键词是" + c.card.kw + "。把它当成今天的观察角度，留意接下来一天里与它呼应的细节，答案会自己浮现。");
+  }
+  if (n > 1 && majors >= Math.ceil(n / 2)) out.push("出现 " + majors + " 张主牌，这件事的分量超过日常琐事，牵动的是阶段性的方向感。别只看眼前一步，想想三个月后你希望自己站在哪里。");
+  else if (majors === 0 && n > 1) out.push("牌面全是小牌，指向具体、可操作的日常层面。问题没有想象中那么大，落到行动细节上处理就好。");
+
+  const order = Object.entries(cnt).sort((a, b) => b[1] - a[1]);
+  if (order.length && n > 1) {
+    const s = SUITS.find(x => x.id === order[0][0]);
+    const parts = s.theme.split(" · ");
+    out.push("出现最多的是" + s.cn + "（" + s.theme + "），这件事的重心落在「" + parts[0] + "」与「" + parts[1] + "」上，其余部分可以暂时放轻。");
+  }
+  if (sp.id === "love") {
+    const a = picks[0], b = picks[1], c = picks[2];
+    out.push(a.rev === b.rev
+      ? "你们两张心牌的朝向一致，说明彼此对这段关系的基本感受是同步的——不论同为正位还是同为逆位，至少没有一方在独自用力。"
+      : "两张心牌的朝向不同：一方在向外给，一方在向内收。这种错位本身不是问题，问题常在于双方都以为对方和自己想的一样，把话说开比猜测有用。");
+    out.push("关系走向是「" + c.card.cn + "」" + (c.rev ? "逆位" : "正位") + "：" + (c.rev
+      ? "这段关系需要一次调整，急不得，先把积累的小情绪处理掉。"
+      : "关系还有继续生长的空间，持续的小行动比一次大的表态更有效。"));
+  }
+  if (sp.id === "cross") {
+    const advice = picks[3], result = picks[4];
+    out.push("建议落在「" + advice.card.cn + "」上，可操作的方向是：" + (advice.rev ? "先停下来、修正偏差，而不是继续加码。" : "顺着这股能量主动做一件具体的小事，别停留在「想」。"));
+    out.push("结果位是「" + result.card.cn + "」" + (result.rev ? "逆位" : "正位") + "——" + (result.rev
+      ? "结局仍有变量，取决于你接下来两周的选择，先别把话说死。"
+      : "方向大体向好，前提是你在「建议」那一格上真的动了。"));
+  }
+  if (sp.id === "three") {
+    const last = picks[n - 1];
+    out.push("至于走向，「" + last.card.cn + "」" + (last.rev ? "逆位" : "正位") + "提示：" + (last.rev
+      ? "这股力量还没有完全展开，结果更依赖你接下来的调整，短期先别急着下定论。"
+      : "趋势是向外舒展的，只要保持现在的节奏，事情会朝你期待的方向推进。"));
+  }
+  return out;
+}
+
+function showReading() {
+  state.phase = "done";
+  syncControls();
+  Sound.play("settle");
+  hintEl.textContent = "解读已生成 · 往下看，或点「重新开始」再抽一次";
+
+  const picks = state.picks, sp = state.spread, q = state.question;
+  let html = '<div class="reading-head"><div><div class="rh-kicker">' + sp.name + " · " + sp.pos.length + " 张</div>" +
+    (q ? '<div class="rh-q">「' + esc(q) + '」</div>' : '<div class="rh-q empty">（未填写问题，本次为整体状态解读）</div>') +
+    '</div><div class="rh-time">' + fmtTime(Date.now()) + "</div></div>";
+
+  if (sp.id === "yesno") {
+    const p = picks[0], yes = !p.rev;
+    html += '<div class="verdict"><div class="vw">' + (yes ? "是" : "否") + "</div><p>" +
+      (yes ? "牌面倾向肯定。" + p.card.cn + "正位：" + p.card.up : "牌面倾向否定，或者时机还没到。" + p.card.cn + "逆位：" + p.card.rev) + "</p></div>";
+  }
+
+  html += '<div class="rgrid">' + picks.map((p, i) =>
+    '<article class="rc" style="--i:' + i + '"><div class="rc-top"><span class="rc-pos">' + sp.pos[i] +
+      '</span><span class="rc-tag' + (p.rev ? " rev" : "") + '">' + (p.rev ? "逆位" : "正位") + "</span></div>" +
+      "<h3>" + p.card.cn + '</h3><div class="rc-en">' + p.card.en + '</div><div class="rc-kw">' + p.card.kw +
+      "</div><p>" + (p.rev ? p.card.rev : p.card.up) + "</p></article>"
+  ).join("") + "</div>";
+
+  html += '<div class="synth" style="--n:' + picks.length + '"><h3>综合解读</h3>' +
+    synth(picks, sp).map(t => "<p>" + t + "</p>").join("") + "</div>";
+
+  html += '<div class="reading-foot"><button class="btn btn-ghost btn-sm" data-act="again">重新占卜</button>' +
+    '<p class="disclaim">塔罗是一面用来对话的镜子，牌面提供视角，决定权始终在你手里。</p></div>';
+
+  readingEl.innerHTML = html;
+  readingEl.hidden = false;
+  saveHist(); renderHist();
+  setTimeout(() => {
+    const r = readingEl.getBoundingClientRect();
+    if (r.top > window.innerHeight * .62) readingEl.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  }, 320);
+}
+
+/* =======================================================================
+   9. 记录
+   ======================================================================= */
+/* ---- 声音开关 ---- */
+const soundBtn = $("#soundBtn");
+function syncSound() {
+  const on = Sound.isEnabled();
+  soundBtn.classList.toggle("on", on);
+  soundBtn.setAttribute("aria-pressed", String(on));
+  soundBtn.setAttribute("aria-label", on ? "关闭声音" : "开启声音");
+  soundBtn.title = on ? "声音：开" : "声音：关";
+}
+if (soundBtn) {
+  syncSound();
+  soundBtn.addEventListener("click", () => {
+    Sound.unlock();
+    const on = Sound.toggle();
+    syncSound();
+    if (on) Sound.play("ui");
+  });
+}
+window.addEventListener("pointerdown", () => Sound.unlock(), { once: true });
+window.addEventListener("keydown", () => Sound.unlock(), { once: true });
+
+const HKEY = "moon-tarot-history-v1";
+function loadHist() { try { return JSON.parse(localStorage.getItem(HKEY) || "[]"); } catch (e) { return []; } }
+function saveHist() {
+  const rec = { t: Date.now(), q: state.question, s: state.spread.name, cards: state.picks.map(p => p.card.cn + (p.rev ? "(逆)" : "(正)")) };
+  const list = loadHist(); list.unshift(rec);
+  try { localStorage.setItem(HKEY, JSON.stringify(list.slice(0, 8))); } catch (e) {}
+}
+function renderHist() {
+  const list = loadHist();
+  if (!list.length) { histEl.hidden = true; histEl.innerHTML = ""; return; }
+  histEl.hidden = false;
+  histEl.innerHTML = '<div class="hist-head"><h2>最近的占卜</h2><button class="link-btn" id="clearHist">清空</button></div><ul>' +
+    list.map(r => '<li><span class="h-time">' + fmtTime(r.t) + '</span><span class="h-spread">' + esc(r.s) +
+      '</span><span class="h-cards">' + esc(r.cards.join(" · ")) + "</span></li>").join("") + "</ul>";
+  const cb = $("#clearHist");
+  if (cb) cb.addEventListener("click", () => { try { localStorage.removeItem(HKEY); } catch (e) {} renderHist(); });
+}
+
+/* =======================================================================
+   10. 词典
+   ======================================================================= */
+const modal = $("#modal"), atlasGrid = $("#atlasGrid"), atlasDetail = $("#atlasDetail");
+let atlasBuilt = false, atlasTimer = 0;
+
+function openAtlas() {
+  if (!atlasBuilt) {
+    atlasGrid.innerHTML = deck.map((c, i) =>
+      '<button class="tile" data-i="' + i + '"><span class="t-glyph" style="color:' + c.color + '">' + c.sym +
+      '</span><span class="t-name">' + c.cn + "</span></button>").join("");
+    atlasBuilt = true;
+  }
+  clearTimeout(atlasTimer);
+  modal.hidden = false;
+  document.body.style.overflow = "hidden";
+  requestAnimationFrame(() => modal.classList.add("open"));
+  setTimeout(() => $("#closeAtlas").focus({ preventScroll: true }), 60);
+}
+function closeAtlas() {
+  modal.classList.remove("open");
+  document.body.style.overflow = "";
+  atlasTimer = setTimeout(() => { modal.hidden = true; }, reduceMotion ? 0 : 460);
+}
+atlasGrid.addEventListener("click", e => {
+  const t = e.target.closest(".tile");
+  if (!t) return;
+  $$(".tile.on", atlasGrid).forEach(x => x.classList.remove("on"));
+  t.classList.add("on");
+  const c = deck[+t.dataset.i];
+  atlasDetail.innerHTML = "<h3>" + c.cn + '</h3><div class="ad-en">' + c.en + '</div><div class="ad-kw">' + c.kw +
+    '</div><div class="ad-row"><b>正位</b>' + c.up + '</div><div class="ad-row"><b>逆位</b>' + c.rev + "</div>";
+});
+
+/* =======================================================================
+   11. 星空
+   ======================================================================= */
+const starfield = (function () {
+  const cv = $("#stars"), ctx = cv.getContext("2d");
+  let w = 0, h = 0, dpr = 1, stars = [], shoot = null, shootTimer = 8, raf = 0, last = 0;
+  let px = 0, py = 0, tpx = 0, tpy = 0, running = false;
+
+  function build() {
+    const count = Math.max(48, Math.min(150, Math.round((w * h) / 13000)));
+    stars = [];
+    for (let i = 0; i < count; i++) {
+      const depth = Math.random();
+      stars.push({
+        x: Math.random() * w, y: Math.random() * h,
+        r: .3 + depth * 1.05, a: .16 + Math.random() * .5,
+        tw: .22 + Math.random() * .75, ph: Math.random() * Math.PI * 2,
+        sp: .18 + (1 - depth) * .55, d: .35 + depth * 1.5, gold: Math.random() > .7
+      });
+    }
+  }
+  function resize() {
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    w = window.innerWidth; h = window.innerHeight;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    cv.style.width = w + "px"; cv.style.height = h + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    build();
+  }
+  function paint(t) {
+    const dt = Math.min(60, t - last) / 1000; last = t;
+    px += (tpx - px) * .045; py += (tpy - py) * .045;
+    ctx.clearRect(0, 0, w, h);
+    for (const s of stars) {
+      s.ph += dt * s.tw; s.x += dt * s.sp * 2;
+      if (s.x > w + 6) { s.x = -6; s.y = Math.random() * h; }
+      const a = s.a * (.55 + .45 * Math.sin(s.ph));
+      const X = s.x - px * s.d, Y = s.y - py * s.d;
+      ctx.beginPath(); ctx.arc(X, Y, s.r, 0, 6.2832);
+      ctx.fillStyle = s.gold ? "rgba(228,200,146," + a.toFixed(3) + ")" : "rgba(214,224,248," + (a * .92).toFixed(3) + ")";
+      ctx.fill();
+      if (s.r > 1.1 && s.gold) {
+        ctx.beginPath(); ctx.arc(X, Y, s.r * 2.8, 0, 6.2832);
+        ctx.strokeStyle = "rgba(228,200,146," + (a * .16).toFixed(3) + ")";
+        ctx.lineWidth = .5; ctx.stroke();
+      }
+    }
+    if (shoot) {
+      shoot.t += dt;
+      const p = shoot.t / shoot.dur;
+      if (p >= 1) shoot = null;
+      else {
+        const x = shoot.x + shoot.vx * shoot.t, y = shoot.y + shoot.vy * shoot.t;
+        const a = Math.sin(p * Math.PI) * .7;
+        const g = ctx.createLinearGradient(x, y, x - shoot.vx * .2, y - shoot.vy * .2);
+        g.addColorStop(0, "rgba(255,242,214," + a.toFixed(3) + ")"); g.addColorStop(1, "rgba(255,242,214,0)");
+        ctx.strokeStyle = g; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - shoot.vx * .2, y - shoot.vy * .2); ctx.stroke();
+      }
+    } else if (!reduceMotion) {
+      shootTimer -= dt;
+      if (shootTimer <= 0) {
+        shootTimer = 11 + Math.random() * 16;
+        const fromLeft = Math.random() > .5;
+        shoot = {
+          x: fromLeft ? -40 : w * .85, y: Math.random() * h * .4, t: 0, dur: 1.3,
+          vx: (fromLeft ? 1 : -1) * (380 + Math.random() * 240), vy: 110 + Math.random() * 80
+        };
+      }
+    }
+    raf = requestAnimationFrame(paint);
+  }
+  function paintStatic() {
+    ctx.clearRect(0, 0, w, h);
+    for (const s of stars) {
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+      ctx.fillStyle = s.gold ? "rgba(228,200,146," + (s.a * .85).toFixed(3) + ")" : "rgba(214,224,248," + (s.a * .8).toFixed(3) + ")";
+      ctx.fill();
+    }
+  }
+  function start() {
+    if (running) return;
+    if (reduceMotion) { paintStatic(); return; }
+    running = true; last = performance.now(); raf = requestAnimationFrame(paint);
+  }
+  function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; running = false; }
+  window.addEventListener("resize", () => { resize(); if (reduceMotion) paintStatic(); });
+  window.addEventListener("pointermove", e => {
+    if (reduceMotion || !canHover) return;
+    tpx = (e.clientX / w - .5) * 16; tpy = (e.clientY / h - .5) * 12;
+  }, { passive: true });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); else start(); });
+  resize();
+  return { start, stop, paintStatic };
+})();
+
+/* =======================================================================
+   12. 装饰月相
+   ======================================================================= */
+function moonShape(p) {
+  const r = 8.6, cx = 12, cy = 12;
+  if (p <= .01) return '<circle cx="12" cy="12" r="' + r + '" fill="currentColor" fill-opacity=".07"/>';
+  const waxing = p < .5, k = Math.cos(p * Math.PI * 2), rx = Math.abs(k) * r;
+  const limb = waxing ? 1 : 0, back = k > 0 ? (waxing ? 0 : 1) : (waxing ? 1 : 0);
+  return '<path d="M' + cx + " " + (cy - r) + " A" + r + " " + r + " 0 0 " + limb + " " + cx + " " + (cy + r) +
+    " A" + rx.toFixed(2) + " " + r + " 0 0 " + back + " " + cx + " " + (cy - r) + ' Z" fill="currentColor" fill-opacity=".5"/>';
+}
+function buildMoons() {
+  const host = $("#moonPhases");
+  if (!host) return;
+  host.innerHTML = [0, .13, .25, .37, .5, .63, .75, .87].map((p, i) =>
+    '<svg style="--k:' + i + '" viewBox="0 0 24 24" aria-hidden="true">' +
+      '<circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width=".7"/>' +
+      moonShape(p) + "</svg>").join("");
+}
+
+/* =======================================================================
+   13. 绑定与启动
+   ======================================================================= */
+$("#brandBtn").addEventListener("click", () => goScene("home"));
+$$(".nav-btn[data-scene]").forEach(b => b.addEventListener("click", () => goScene(b.dataset.scene)));
+$("#enterBtn").addEventListener("click", () => goScene("ritual"));
+$("#navAtlas").addEventListener("click", openAtlas);
+$("#atlasBtn").addEventListener("click", openAtlas);
+$("#closeAtlas").addEventListener("click", closeAtlas);
+modal.addEventListener("click", e => { if (e.target === modal) closeAtlas(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !modal.hidden) closeAtlas(); });
+
+drawBtn.addEventListener("click", startDraw);
+resetBtn.addEventListener("click", () => {
+  if (state.phase === "shuffle" || state.flying) return;
+  state.phase = "idle"; state.picks = []; state.fan = [];
+  stageEl.innerHTML = ""; fanEl.innerHTML = ""; fanEl.classList.remove("open", "closing"); fanEl.classList.add("empty");
+  readingEl.hidden = true; readingEl.innerHTML = "";
+  deckEl.classList.remove("done");
+  hintEl.textContent = "选好牌阵后点「洗牌」，牌扇展开后由你亲手挑选每一张。";
+  syncControls();
+});
+$("#q").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); startDraw(); } });
+readingEl.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]");
+  if (!b) return;
+  if (b.dataset.act === "again") {
+    resetBtn.click();
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+    setTimeout(() => startDraw(), reduceMotion ? 0 : 420);
+  }
+});
+mMotion.addEventListener("change", e => { reduceMotion = e.matches; starfield.stop(); starfield.start(); });
+
+buildDeck(); buildMoons(); renderSpreads(); renderHist(); syncControls(); starfield.start();
+fanEl.classList.add("empty");
+
+</script>
+</body>
+</html>
