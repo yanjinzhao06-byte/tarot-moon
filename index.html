@@ -197,25 +197,31 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
 .deck.shuffling i{animation:shuffle-out .56s var(--ease) 2 both;animation-delay:var(--sd)}
 
 /* 牌扇 */
-.fan{position:relative;z-index:4;width:100%;height:calc(var(--cw) * 1.72 + 46px);
-  display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;
-  transition:opacity .5s var(--ease),height .55s var(--ease)}
+.fan{position:relative;z-index:4;width:100%;max-width:min(980px,100%);margin:0 auto;padding:6px 0 10px;
+  display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:26px clamp(8px,1.4vw,14px);
+  opacity:0;pointer-events:none;transition:opacity .5s var(--ease)}
 .fan.open{opacity:1;pointer-events:auto}
 .fan.closing{opacity:0}
-.fan.empty{height:0;opacity:0;overflow:hidden;margin:0}
-.fan::before{content:"";position:absolute;left:50%;bottom:4%;width:min(780px,96%);height:300px;
-  transform:translateX(-50%);pointer-events:none;z-index:-1;opacity:0;transition:opacity .9s var(--ease);
-  background:radial-gradient(ellipse at 50% 62%,rgba(255,214,150,.16),rgba(120,150,220,.06) 45%,transparent 70%)}
+.fan.empty{display:none}
+.fan::before{content:"";position:absolute;left:50%;top:50%;width:min(920px,112%);height:min(560px,112%);
+  transform:translate(-50%,-50%);pointer-events:none;z-index:-1;opacity:0;transition:opacity .9s var(--ease);
+  background:radial-gradient(ellipse at 50% 55%,rgba(255,214,150,.13),rgba(120,150,220,.05) 46%,transparent 70%)}
 .fan.open::before{opacity:1}
-.fcard{position:absolute;bottom:0;left:50%;width:var(--cw);height:calc(var(--cw) * 1.72);touch-action:manipulation;
-  border:0;padding:0;background:none;cursor:pointer;
-  transform:translateX(-50%);transform-origin:50% 118%;
-  transition:transform .8s var(--ease),filter .4s var(--ease);will-change:transform}
-.fan.open .fcard{transform:translateX(-50%) translateY(var(--ty,0px)) rotate(var(--rot,0deg));
-  transition-delay:calc(var(--k) * 22ms)}
-.fan.open .fcard:hover,.fan.open .fcard.hot{
-  transform:translateX(-50%) translateY(calc(var(--ty,0px) - 30px)) rotate(var(--rot,0deg)) scale(1.06);
-  transition-delay:0s;z-index:9;filter:drop-shadow(0 22px 30px rgba(0,0,0,.8))}
+.fcard{position:relative;width:100%;aspect-ratio:1/1.72;touch-action:manipulation;border:0;padding:0;background:none;
+  cursor:pointer;opacity:0;transform:translateY(10px) scale(.96);
+  transition:opacity .5s var(--ease),transform .5s var(--ease),filter .35s var(--ease),visibility .3s;will-change:transform}
+.fan.open .fcard{opacity:1;transform:none;transition-delay:calc(var(--k) * 14ms)}
+.fan.open .fcard:hover,.fan.open .fcard.hot{transform:translateY(-7px) scale(1.05);transition-delay:0s;z-index:5;
+  filter:drop-shadow(0 22px 30px rgba(0,0,0,.8))}
+.fcard.gone{opacity:0 !important;visibility:hidden;pointer-events:none;transform:scale(.9) !important}
+.fcard .fidx{position:absolute;left:0;right:0;bottom:-17px;text-align:center;font-family:var(--latin);
+  font-size:9.5px;letter-spacing:.2em;color:rgba(201,168,107,.5);pointer-events:none;transition:color .3s}
+.fan.open .fcard:hover .fidx,.fan.open .fcard.hot .fidx{color:rgba(245,227,186,.95)}
+.draw-target{position:relative;z-index:6;text-align:center;font-size:10.5px;letter-spacing:.3em;
+  color:rgba(201,168,107,.85);text-indent:.3em;margin:2px 0 -6px;opacity:0;transform:translateY(4px);
+  transition:opacity .5s var(--ease),transform .5s var(--ease);pointer-events:none}
+.draw-target.on{opacity:1;transform:none}
+.draw-target b{font-weight:400;font-size:13px;letter-spacing:.2em;color:#f6e7c2}
 .fcard .fback{position:relative;width:100%;height:100%;border-radius:3px;overflow:hidden;
   border:1px solid rgba(201,168,107,.5);
   background:radial-gradient(120% 80% at 50% 4%,#132239 0%,#0a1424 44%,#050a13 100%);
@@ -556,6 +562,8 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
   .btn{padding:14px 26px;font-size:11.5px;min-height:44px}
   .gate{padding:100px 18px 80px}
   .table{min-height:clamp(300px,44vh,420px)}
+  .fan{grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 8px}
+  .draw-target{font-size:10px;letter-spacing:.22em}
   .rgrid{grid-template-columns:1fr}
   .atlas{grid-template-columns:repeat(auto-fill,minmax(74px,1fr))}
   .aura{inset:-30% -18%}
@@ -684,6 +692,7 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
             <circle cx="86" cy="200" r="1.2" fill="currentColor" stroke="none" fill-opacity=".6"/>
           </svg>
         </div>
+        <div class="draw-target" id="drawTarget"></div>
         <div class="deck" id="deck" aria-hidden="true"></div>
         <div class="fan" id="fan" aria-label="牌扇"></div>
         <div class="stage" id="stage" aria-live="polite"></div>
@@ -1158,6 +1167,17 @@ let lastTick = 0;
 const stageEl = $("#stage"), deckEl = $("#deck"), fanEl = $("#fan");
 const readingEl = $("#reading"), histEl = $("#hist"), hintEl = $("#hint");
 const drawBtn = $("#drawBtn"), resetBtn = $("#resetBtn"), spreadsEl = $("#spreads");
+const targetEl = $("#drawTarget");
+function updateTarget() {
+  if (!targetEl) return;
+  const pos = state.spread.pos[state.picks.length];
+  if (state.phase === "choosing" && pos) {
+    targetEl.innerHTML = "正在为「<b>" + pos + "</b>」抽牌 · 点任意一张";
+    targetEl.classList.add("on");
+  } else {
+    targetEl.classList.remove("on");
+  }
+}
 
 /* =======================================================================
    1. 场景
@@ -1382,21 +1402,17 @@ async function startDraw() {
 
   /* 原有随机逻辑：78 张洗牌，牌扇取前 N 张，各 50% 逆位 */
   const pool = shuffleArr(deck);
-  const n = window.innerWidth < 640 ? 13 : 21;
+  const n = window.innerWidth < 640 ? 16 : 21;
   state.fan = pool.slice(0, n).map(c => ({ card: c, rev: Math.random() < 0.5 }));
 
   fanEl.innerHTML = state.fan.map((f, i) =>
-    '<button class="fcard" data-k="' + i + '" data-snd="none" aria-label="第 ' + (i + 1) + ' 张牌"><div class="fback">' +
-      backSVG(false) + "</div></button>"
+    '<button class="fcard" data-k="' + i + '" data-snd="none" aria-label="第 ' + (i + 1) + ' 张牌">' +
+      '<div class="fback">' + backSVG(false) + "</div>" +
+      '<span class="fidx">' + pad2(i + 1) + "</span></button>"
   ).join("");
 
-  const mid = (n - 1) / 2;
-  const step = n > 15 ? 3.1 : 4.4;
   $$(".fcard", fanEl).forEach((el, i) => {
     el.style.setProperty("--k", i);
-    el.style.setProperty("--rot", ((i - mid) * step).toFixed(2) + "deg");
-    el.style.setProperty("--ty", (Math.pow(Math.abs(i - mid), 1.35) * 2.6).toFixed(1) + "px");
-    el.style.zIndex = 100 - Math.abs(Math.round(i - mid));
     el.addEventListener("click", () => pickFan(i));
     el.addEventListener("pointerenter", () => {
       if (state.phase !== "choosing") return;
@@ -1411,8 +1427,17 @@ async function startDraw() {
   fanEl.classList.remove("empty");
   fanEl.classList.add("open");
   Sound.play("fan");
-  hintEl.textContent = "牌扇已展开 · 亲手挑 " + state.spread.pos.length + " 张（点击牌背）";
+  updateTarget();
+  hintEl.textContent = "牌已摊开 · 共 " + n + " 张，凭直觉点任意一张牌背";
   syncControls();
+  if (!reduceMotion) {
+    setTimeout(() => {
+      const r = fanEl.getBoundingClientRect();
+      if (r.top > window.innerHeight * 0.5 || r.bottom > window.innerHeight) {
+        fanEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 420);
+  }
 }
 
 async function pickFan(k) {
@@ -1460,8 +1485,9 @@ async function pickFan(k) {
     hintEl.textContent = "牌已落位 · 逐张点击牌背翻开，全部翻开后给出解读";
   } else {
     state.phase = "choosing";
-    hintEl.textContent = "已选 " + state.picks.length + " / " + need + " 张 · 继续挑选";
+    hintEl.textContent = "已选 " + state.picks.length + " / " + need + " 张";
   }
+  updateTarget();
   syncControls();
 }
 
@@ -1942,7 +1968,8 @@ resetBtn.addEventListener("click", () => {
   stageEl.innerHTML = ""; fanEl.innerHTML = ""; fanEl.classList.remove("open", "closing"); fanEl.classList.add("empty");
   readingEl.hidden = true; readingEl.innerHTML = "";
   deckEl.classList.remove("done");
-  hintEl.textContent = "选好牌阵后点「洗牌」，牌扇展开后由你亲手挑选每一张。";
+  hintEl.textContent = "选好牌阵后点「洗牌」，牌会摊开成网格，由你亲手挑选每一张。";
+  if (targetEl) targetEl.classList.remove("on");
   syncControls();
 });
 $("#q").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); startDraw(); } });
