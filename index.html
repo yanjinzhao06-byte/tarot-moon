@@ -119,6 +119,29 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
 .gate-orbit circle,.gate-orbit path{fill:none;stroke:currentColor;stroke-width:.4}
 .gate-inner{position:relative;z-index:2;max-width:700px}
 .eyebrow{margin:0 0 22px;font-size:10px;letter-spacing:.62em;color:rgba(201,168,107,.72);text-transform:uppercase;text-indent:.62em}
+
+/* 署名 · 子非鱼：开页浮现 */
+.maker{--mg:rgba(201,168,107,.95);display:flex;align-items:center;justify-content:center;gap:18px;margin:0 0 26px;opacity:0}
+.maker-line{display:block;width:0;height:1px;background:linear-gradient(90deg,transparent,var(--mg),transparent)}
+.maker-name{font-family:var(--serif);font-size:13px;line-height:1;letter-spacing:.62em;text-indent:.62em;white-space:nowrap;
+  background:linear-gradient(100deg,rgba(201,168,107,.55) 0%,#fff7e0 40%,#f5e3ba 60%,rgba(201,168,107,.55) 100%);
+  background-size:260% 100%;background-position:210% 0;
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.maker.in{animation:maker-fade 2.6s var(--ease) both}
+.maker.in .maker-name{animation:maker-rise 2.1s var(--ease) both,maker-gleam 6.4s ease-in-out 1.5s infinite}
+.maker.in .maker-line{animation:maker-line 1.5s var(--ease) .42s both}
+@keyframes maker-fade{0%{opacity:0}42%{opacity:1}100%{opacity:.86}}
+@keyframes maker-rise{0%{letter-spacing:1.05em;text-indent:1.05em;filter:blur(7px);transform:translateY(13px);opacity:0}
+  38%{opacity:1}72%{filter:blur(0)}
+  100%{letter-spacing:.62em;text-indent:.62em;filter:blur(0);transform:translateY(0);opacity:1}}
+@keyframes maker-gleam{0%,100%{background-position:210% 0}34%{background-position:-40% 0}}
+@keyframes maker-line{0%{width:0;opacity:0}55%{opacity:.95}100%{width:46px;opacity:.78}}
+@media (prefers-reduced-motion:reduce){
+  .maker{opacity:.86}
+  .maker-name{background:none;color:rgba(245,227,186,.88);-webkit-text-fill-color:currentColor}
+  .maker-line{width:46px;opacity:.62}
+  .maker.in,.maker.in .maker-name,.maker.in .maker-line{animation:none}
+}
 .gate h1{margin:0;font-family:var(--serif);font-weight:500;font-size:clamp(30px,6.2vw,60px);
   letter-spacing:.14em;line-height:1.35;
   background:linear-gradient(180deg,#fff8e6 0%,#e9d3a1 46%,#b99457 100%);
@@ -642,6 +665,11 @@ main{position:relative;z-index:2}\n.scene{overflow-x:clip}
         <path d="M104 104 L200 200 L296 296 M296 104 L200 200 L104 296" stroke-opacity=".5"/>
       </svg>
       <div class="gate-inner">
+        <p class="maker" id="maker" aria-label="出品：子非鱼">
+          <span class="maker-line" aria-hidden="true"></span>
+          <span class="maker-name">子非鱼</span>
+          <span class="maker-line" aria-hidden="true"></span>
+        </p>
         <p class="eyebrow">Moonlight · Tarot · 78</p>
         <h1>在星辰与月光之间</h1>
         <p class="lede">聆听你内心的指引</p>
@@ -857,8 +885,6 @@ const SPREADS = [
   {id:"cross", name:"五张十字", desc:"现状 · 阻碍 · 根源 · 建议 · 结果", pos:["现状","阻碍","根源","建议","结果"]},
   {id:"yesno", name:"是 / 否",  desc:"仅用 22 张大牌 + 4 张 Ace + 圣杯九", pos:["回答"]}
 ];
-
-
 /* =======================================================================
    声音引擎 · 玲珑破碎（Web Audio 合成，无外部音频文件）
    ======================================================================= */
@@ -1141,7 +1167,6 @@ const Sound = (function () {
     toggle: function () { return setEnabled(!enabled); }
   };
 })();
-
 /* =======================================================================
    月影塔罗 · 交互层（数据与牌阵定义在上方，未改动）
    ======================================================================= */
@@ -1185,13 +1210,21 @@ function updateTarget() {
    ======================================================================= */
 const scenes = { home: $("#scene-home"), ritual: $("#scene-ritual") };
 let sceneBusy = false;
+/* 署名浮现：子非鱼 —— 首屏打开、每次回到首页各浮现一次 */
+const makerEl = $("#maker");
+function playMaker() {
+  if (!makerEl) return;
+  makerEl.classList.remove("in");
+  void makerEl.offsetWidth;
+  makerEl.classList.add("in");
+}
 function goScene(name) {
   if (name === state.scene || sceneBusy) return;
   Sound.play(name === "home" ? "ui" : "swell");
   const out = scenes[state.scene], inn = scenes[name];
   $$(".nav-btn[data-scene]").forEach(b => b.classList.toggle("on", b.dataset.scene === name));
   state.scene = name;
-  if (reduceMotion) { out.classList.remove("active"); inn.classList.add("active"); window.scrollTo(0, 0); return; }
+  if (reduceMotion) { out.classList.remove("active"); inn.classList.add("active"); window.scrollTo(0, 0); if (name === "home") playMaker(); return; }
   sceneBusy = true;
   out.classList.add("leaving");
   setTimeout(() => {
@@ -1199,6 +1232,7 @@ function goScene(name) {
     inn.classList.add("active");
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     sceneBusy = false;
+    if (name === "home") playMaker();
   }, 380);
 }
 
@@ -2001,7 +2035,7 @@ mMotion.addEventListener("change", e => { reduceMotion = e.matches; starfield.st
 
 buildDeck(); buildMoons(); renderSpreads(); renderHist(); syncControls(); starfield.start();
 fanEl.classList.add("empty");
-
+setTimeout(playMaker, reduceMotion ? 0 : 260);
 </script>
 </body>
 </html>
